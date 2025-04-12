@@ -1,0 +1,29 @@
+@import "../../assets/styles/variables";
+@import "../../assets/styles/mixins";
+
+.login-container {
+  max-width: 400px;
+  margin: 3rem auto;
+  padding: 2rem;
+  background-color: $white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+
+  label {
+    margin-bottom: 0.25rem;
+    font-weight: bold;
+  }
+
+  input {
+    margin-bottom: 1rem;
+  }
+
+  button {
+    width: 100%;
+  }
+}
