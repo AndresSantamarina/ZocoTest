@@ -1,6 +1,7 @@
 import { Outlet } from "react-router-dom";
 import MenuNav from "../MenuNav/MenuNav";
 import Footer from "../Footer/Footer";
+import "./Layout.scss";
 
 const Layout = () => {
   return (

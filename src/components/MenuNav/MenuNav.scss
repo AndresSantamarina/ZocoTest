@@ -1,0 +1,22 @@
+@import "../../assets/styles/variables";
+@import "../../assets/styles/mixins";
+
+.menu-nav {
+  background-color: $black;
+  color: $white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+
+  &__left {
+    font-weight: bold;
+    font-size: 1.2rem;
+  }
+
+  &__right {
+    button {
+      margin-left: 1rem;
+    }
+  }
+}
