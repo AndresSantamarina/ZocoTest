@@ -1,0 +1,14 @@
+@use "../../assets/styles/variables";
+@use "../../assets/styles/mixins";
+
+
+.layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+
+  &__content {
+    flex: 1;
+    padding: 1rem;
+  }
+}

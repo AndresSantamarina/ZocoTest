@@ -1,0 +1,82 @@
+@import 'variables';
+@import 'mixins';
+
+// Reset básico
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+}
+
+body {
+  font-family: $font-base;
+  background-color: $gray-bg;
+  color: $black;
+}
+
+// Estilos base para títulos y textos
+h1, h2, h3 {
+  font-family: $font-title;
+  margin-bottom: 0.5rem;
+}
+
+p {
+  font-size: $font-size-base;
+  line-height: 1.5;
+}
+
+// Botones
+.button-edit {
+  @include button-style($blue-edit);
+}
+
+.button-delete {
+  @include button-style($red-delete);
+}
+
+.button-confirm {
+  @include button-style($green-confirm);
+}
+
+// Inputs y formularios
+input, select, textarea {
+  padding: $form-input-padding;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: $font-size-base;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+// Layout generales
+.dashboard {
+  padding: $dashboard-padding;
+}
+
+// Footer y MenuNav estilos básicos
+footer {
+  background-color: $lime-green;
+  color: $black;
+  padding: 1rem;
+  text-align: center;
+}
+
+.menu-nav {
+  background-color: $black;
+  color: $white;
+  padding: 1rem;
+
+  a {
+    color: $white;
+    text-decoration: none;
+    margin-right: 1rem;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
