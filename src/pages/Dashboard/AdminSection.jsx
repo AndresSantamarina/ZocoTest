@@ -25,17 +25,30 @@ const AdminSection = () => {
           axios.get("http://localhost:3001/addresses"),
         ]);
 
-        setUsers(usersRes.data);
+        const filteredUsers = usersRes.data.filter(
+          (user) => user.role === "user"
+        );
+
+        const enrichedUsers = filteredUsers.map((user) => ({
+          ...user,
+          educations: educationsRes.data.filter(
+            (edu) => edu.userId === user.id
+          ),
+          addresses: addressesRes.data.filter(
+            (addr) => addr.userId === user.id
+          ),
+        }));
+
+        setUsers(enrichedUsers);
         setEducations(educationsRes.data);
         setAddresses(addressesRes.data);
       } catch (error) {
-        console.error("Error fetching data:", error);
-        Swal.fire("Error", "No se pudieron cargar los datos", "error");
+        console.error("Error al cargar datos:", error);
       }
     };
 
     fetchData();
-  }, [token]);
+  }, [showModal]);
 
   const handleOpenCreate = () => {
     setSelectedUser(null);
@@ -51,138 +64,167 @@ const AdminSection = () => {
 
   const handleSubmit = async (data) => {
     try {
-      const { educations = [], addresses = [], ...userData } = data;
-      
+      const {
+        educations: formEducations = [],
+        addresses: formAddresses = [],
+        ...userData
+      } = data;
+
       if (userData.id) {
         // 1. Actualizar datos básicos del usuario
         await axios.put(`http://localhost:3001/users/${userData.id}`, userData);
-        
+
         // 2. Manejar estudios - SOLUCIÓN PARA USUARIOS SIN ESTUDIOS PREVIOS
         const existingEducations = await axios.get(
           `http://localhost:3001/educations?userId=${userData.id}`
         );
-  
+
         // Para cada estudio en el formulario
         await Promise.all(
-          educations.map(async (edu) => {
+          formEducations.map(async (edu) => {
             const educationData = {
               title: edu.title,
               userId: userData.id,
-              ...(edu.year && { year: edu.year })
             };
-  
+
             if (edu.id) {
               // Verificar si el estudio existe antes de actualizar
               try {
                 await axios.get(`http://localhost:3001/educations/${edu.id}`);
-                return axios.put(`http://localhost:3001/educations/${edu.id}`, educationData);
+                return axios.put(
+                  `http://localhost:3001/educations/${edu.id}`,
+                  educationData
+                );
               } catch (error) {
                 // Si no existe, crear uno nuevo
-                return axios.post('http://localhost:3001/educations', {
+                return axios.post("http://localhost:3001/educations", {
                   ...educationData,
-                  id: Date.now()
+                  id: Date.now().toString(),
                 });
               }
             } else {
               // Crear nuevo estudio
-              return axios.post('http://localhost:3001/educations', {
+              return axios.post("http://localhost:3001/educations", {
                 ...educationData,
-                id: Date.now()
+                id: Date.now().toString(),
               });
             }
           })
         );
-  
+
         // Eliminar estudios existentes que no están en el formulario
-        const educationsToKeep = educations.map(edu => edu.id);
+        const educationsToKeep = formEducations.map((edu) => edu.id);
         await Promise.all(
           existingEducations.data
-            .filter(existing => !educationsToKeep.includes(existing.id))
-            .map(edu => axios.delete(`http://localhost:3001/educations/${edu.id}`))
+            .filter((existing) => !educationsToKeep.includes(existing.id))
+            .map((edu) =>
+              axios.delete(`http://localhost:3001/educations/${edu.id}`)
+            )
         );
-  
+
         // 3. Manejar direcciones (misma lógica que estudios)
         const existingAddresses = await axios.get(
           `http://localhost:3001/addresses?userId=${userData.id}`
         );
-  
+
         await Promise.all(
-          addresses.map(async (addr) => {
+          formAddresses.map(async (addr) => {
             const addressData = {
               address: addr.address,
               userId: userData.id,
-              ...(addr.city && { city: addr.city })
             };
-  
+
             if (addr.id) {
               try {
                 await axios.get(`http://localhost:3001/addresses/${addr.id}`);
-                return axios.put(`http://localhost:3001/addresses/${addr.id}`, addressData);
+                return axios.put(
+                  `http://localhost:3001/addresses/${addr.id}`,
+                  addressData
+                );
               } catch {
-                return axios.post('http://localhost:3001/addresses', {
+                return axios.post("http://localhost:3001/addresses", {
                   ...addressData,
-                  id: Date.now() + 1 // ID diferente a estudios
+                  id: Date.now().toString() + 1, // ID diferente a estudios
                 });
               }
             } else {
-              return axios.post('http://localhost:3001/addresses', {
+              return axios.post("http://localhost:3001/addresses", {
                 ...addressData,
-                id: Date.now() + 1
+                id: Date.now().toString() + 1,
               });
             }
           })
         );
-  
+
         // Eliminar direcciones existentes que no están en el formulario
-        const addressesToKeep = addresses.map(addr => addr.id);
+        const addressesToKeep = formAddresses.map((addr) => addr.id);
         await Promise.all(
           existingAddresses.data
-            .filter(existing => !addressesToKeep.includes(existing.id))
-            .map(addr => axios.delete(`http://localhost:3001/addresses/${addr.id}`))
+            .filter((existing) => !addressesToKeep.includes(existing.id))
+            .map((addr) =>
+              axios.delete(`http://localhost:3001/addresses/${addr.id}`)
+            )
         );
-  
+
         Swal.fire("Éxito", "Usuario actualizado correctamente", "success");
       } else {
         // Crear nuevo usuario
-        const newUser = { ...userData, id: Date.now() };
-        const userResponse = await axios.post("http://localhost:3001/users", newUser);
-  
+        const newUser = { ...userData, id: Date.now().toString() };
+        const userResponse = await axios.post(
+          "http://localhost:3001/users",
+          newUser
+        );
+
         // Crear estudios
         await Promise.all(
-          educations.map(edu => 
+          formEducations.map((edu) =>
             axios.post("http://localhost:3001/educations", {
               title: edu.title,
               userId: newUser.id,
-              id: Date.now() + Math.floor(Math.random() * 1000),
+              id: `${Date.now().toString()}-${Math.floor(
+                Math.random() * 1000
+              )}`,
             })
           )
         );
-        
+
         // Crear direcciones
         await Promise.all(
-          addresses.map(addr => 
+          formAddresses.map((addr) =>
             axios.post("http://localhost:3001/addresses", {
               address: addr.address,
               userId: newUser.id,
-              id: Date.now() + Math.floor(Math.random() * 1000),
+              id: `${Date.now().toString()}-${Math.floor(
+                Math.random() * 1000
+              )}`,
             })
           )
         );
-  
+
         Swal.fire("Éxito", "Usuario creado correctamente", "success");
       }
-      
+
       // Refrescar datos
       const [usersRes, educationsRes, addressesRes] = await Promise.all([
         axios.get("http://localhost:3001/users"),
         axios.get("http://localhost:3001/educations"),
-        axios.get("http://localhost:3001/addresses")
+        axios.get("http://localhost:3001/addresses"),
       ]);
-      
-      setUsers(usersRes.data);
+
+      const filteredUsers = usersRes.data.filter(
+        (user) => user.role === "user"
+      );
+
+      const enrichedUsers = filteredUsers.map((user) => ({
+        ...user,
+        educations: educationsRes.data.filter((edu) => edu.userId === user.id),
+        addresses: addressesRes.data.filter((addr) => addr.userId === user.id),
+      }));
+
+      setUsers(enrichedUsers);
       setEducations(educationsRes.data);
       setAddresses(addressesRes.data);
-      
+
       setShowModal(false);
     } catch (error) {
       console.error("Error saving user:", error);
@@ -193,7 +235,7 @@ const AdminSection = () => {
   const handleDeleteUser = async (id) => {
     Swal.fire({
       title: "¿Estás seguro?",
-      text: "Esta acción eliminará al usuario.",
+      text: "Esta acción eliminará al usuario y todos sus datos relacionados.",
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Sí, eliminar",
@@ -201,12 +243,51 @@ const AdminSection = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
+          // Eliminar primero las relaciones
+          await Promise.all([
+            ...educations
+              .filter((edu) => edu.userId === id)
+              .map((edu) =>
+                axios.delete(`http://localhost:3001/educations/${edu.id}`)
+              ),
+            ...addresses
+              .filter((addr) => addr.userId === id)
+              .map((addr) =>
+                axios.delete(`http://localhost:3001/addresses/${addr.id}`)
+              ),
+          ]);
+
+          // Luego eliminar el usuario
           await axios.delete(`http://localhost:3001/users/${id}`);
-          setUsers(users.filter((user) => user.id !== id));
+
+          // Actualizar todos los estados
+          const [usersRes, educationsRes, addressesRes] = await Promise.all([
+            axios.get("http://localhost:3001/users"),
+            axios.get("http://localhost:3001/educations"),
+            axios.get("http://localhost:3001/addresses"),
+          ]);
+
+          const filteredUsers = usersRes.data.filter(
+            (user) => user.role === "user"
+          );
+          const enrichedUsers = filteredUsers.map((user) => ({
+            ...user,
+            educations: educationsRes.data.filter(
+              (edu) => edu.userId === user.id
+            ),
+            addresses: addressesRes.data.filter(
+              (addr) => addr.userId === user.id
+            ),
+          }));
+
+          setUsers(enrichedUsers);
+          setEducations(educationsRes.data);
+          setAddresses(addressesRes.data);
+
           Swal.fire({
             icon: "success",
             title: "Eliminado",
-            text: "El usuario ha sido eliminado.",
+            text: "El usuario y sus datos han sido eliminados.",
             timer: 1500,
             showConfirmButton: false,
           });
@@ -244,50 +325,89 @@ const AdminSection = () => {
       </button>
       <UserModal
         show={showModal}
-        onClose={() => setShowModal(false)}
+        onClose={() => {
+          setShowModal(false);
+          setSelectedUser(null);
+        }}
         title={modalTitle}
-        onSubmit={handleSubmit}
+        onSubmit={(result) => {
+          // Refrescar datos después de cualquier acción
+          const fetchData = async () => {
+            try {
+              const [usersRes, educationsRes, addressesRes] = await Promise.all(
+                [
+                  axios.get("http://localhost:3001/users"),
+                  axios.get("http://localhost:3001/educations"),
+                  axios.get("http://localhost:3001/addresses"),
+                ]
+              );
+
+              const filteredUsers = usersRes.data.filter(
+                (user) => user.role === "user"
+              );
+              const enrichedUsers = filteredUsers.map((user) => ({
+                ...user,
+                educations: educationsRes.data.filter(
+                  (edu) => edu.userId === user.id
+                ),
+                addresses: addressesRes.data.filter(
+                  (addr) => addr.userId === user.id
+                ),
+              }));
+
+              setUsers(enrichedUsers);
+              setEducations(educationsRes.data);
+              setAddresses(addressesRes.data);
+            } catch (error) {
+              console.error("Error al cargar datos:", error);
+            }
+          };
+
+          fetchData();
+        }}
         initialData={selectedUser}
       />
       <div className="user-table">
         <h4>Lista de Usuarios</h4>
-        <table>
-          <thead>
-            <tr>
-              <th>Nombre</th>
-              <th>Email</th>
-              <th>Estudios</th>
-              <th>Direcciones</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((user) => (
-              <tr key={user.id}>
-                <td>{user.name}</td>
-                <td>{user.email}</td>
-                <td>{getUserEducations(user.id)}</td>
-                <td>{getUserAddresses(user.id)}</td>
-                {/* <td>{user.education}</td>
-                <td>{user.address}</td> */}
-                <td>
-                  <button
-                    className="button-edit"
-                    onClick={() => handleOpenEdit(user)}
-                  >
-                    <FaEdit />
-                  </button>
-                  <button
-                    className="button-delete"
-                    onClick={() => handleDeleteUser(user.id)}
-                  >
-                    <MdDelete />
-                  </button>
-                </td>
+        {users.length === 0 ? (
+          <p>Cargando usuarios...</p>
+        ) : (
+          <table>
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Estudios</th>
+                <th>Direcciones</th>
+                <th>Acciones</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {users.map((user) => (
+                <tr key={user.id}>
+                  <td>{user.name}</td>
+                  <td>{user.email}</td>
+                  <td>{getUserEducations(user.id)}</td>
+                  <td>{getUserAddresses(user.id)}</td>
+                  <td>
+                    <button
+                      className="button-edit"
+                      onClick={() => handleOpenEdit(user)}
+                    >
+                      <FaEdit />
+                    </button>
+                    <button
+                      className="button-delete"
+                      onClick={() => handleDeleteUser(user.id)}
+                    >
+                      <MdDelete />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   );

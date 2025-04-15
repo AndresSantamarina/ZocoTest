@@ -1,14 +1,14 @@
 {
   "users": [
     {
-      "id": 1,
+      "id": "1",
       "email": "admin@example.com",
       "password": "admin123",
       "name": "Admin User",
       "role": "admin"
     },
     {
-      "id": 2,
+      "id": "2",
       "email": "user@example.com",
       "password": "user123",
       "name": "User Normal",
@@ -19,49 +19,36 @@
       "email": "assantamarina@gmail.com",
       "password": "123",
       "role": "user",
-      "id": 1744738921183
-    },
-    {
-      "name": "Andrés Eduardo",
-      "email": "assantamarina@gmail.com",
-      "password": "asd",
-      "role": "user",
-      "id": 1744742556077
+      "id": "1744738921183"
     }
   ],
   "educations": [
     {
-      "id": 1,
-      "userId": 2,
-      "title": "Licenciatura en Sistemas",
-      "year": 2020
+      "id": "1",
+      "userId": "2",
+      "title": "Licenciatura en Sistemas"
     },
     {
-      "id": 2,
-      "userId": 2,
+      "id": "2",
+      "userId": "2",
       "title": "Posgrado en UX"
     },
     {
       "title": "Programación",
-      "userId": 1744738921183,
-      "id": 1744738921215
-    },
-    {
-      "title": "1",
-      "userId": 1744742556077,
-      "id": 1744746989200
+      "userId": "1744738921183",
+      "id": "1744738921215"
     }
   ],
   "addresses": [
     {
-      "id": 1,
+      "id": "1",
       "userId": 2,
       "address": "Calle Falsa 123"
     },
     {
       "address": "Concepción",
-      "userId": 1744738921183,
-      "id": 1744738921247
+      "userId": "1744738921183",
+      "id": "1744738921247"
     }
   ]
 }

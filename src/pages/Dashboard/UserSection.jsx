@@ -69,7 +69,7 @@ const UserSection = () => {
       } else {
         // Crear nuevo estudio
         const newEducation = {
-          id: Date.now(),
+          id: Date.now().toString(),
           userId: user.id,
           title: educationInput,
         };
@@ -123,7 +123,7 @@ const UserSection = () => {
       } else {
         // Crear nueva dirección
         const newAddress = {
-          id: Date.now(),
+          id: Date.now().toString(),
           userId: user.id,
           address: addressInput,
         };
