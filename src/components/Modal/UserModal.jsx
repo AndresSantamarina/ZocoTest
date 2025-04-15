@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import "./UserModal.scss";
 import { IoClose } from "react-icons/io5";
+import Swal from "sweetalert2";
 
 const UserModal = ({ show, onClose, title, onSubmit, initialData = {} }) => {
   const [formData, setFormData] = useState({
@@ -31,6 +32,13 @@ const UserModal = ({ show, onClose, title, onSubmit, initialData = {} }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     onSubmit(formData);
+    Swal.fire({
+      icon: "success",
+      title: "Guardado correctamente",
+      text: "Los datos del usuario fueron guardados.",
+      timer: 1500,
+      showConfirmButton: false,
+    });
     onClose();
   };
 
@@ -86,9 +94,14 @@ const UserModal = ({ show, onClose, title, onSubmit, initialData = {} }) => {
               required
             />
           </label>
-          <button type="submit" className="button-confirm">
-            Guardar
-          </button>
+          <div className="modal-buttons">
+            <button type="submit" className="button-confirm">
+              Guardar
+            </button>
+            <button type="button" className="button-delete" onClick={onClose}>
+              Cancelar
+            </button>
+          </div>
         </form>
       </div>
     </div>

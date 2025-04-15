@@ -3,7 +3,7 @@ import { useState } from "react";
 import AdminSection from "./AdminSection";
 import UserSection from "./UserSection";
 
-const userRole = sessionStorage.getItem("userRole") || "admin";
+const userRole = sessionStorage.getItem("role") || "user";
 
 const Dashboard = () => {
   const [showModal, setShowModal] = useState(false);
@@ -52,7 +52,7 @@ const Dashboard = () => {
           addresses={addresses}
           setAddresses={setAddresses}
           editEducationIndex={editEducationIndex}
-          setEditEduactionIndex={setEditEducationIndex}
+          setEditEducationIndex={setEditEducationIndex}
           editAddressIndex={editAddressIndex}
           setEditAddressIndex={setEditAddressIndex}
         />

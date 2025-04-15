@@ -2,6 +2,7 @@ import { FaEdit } from "react-icons/fa";
 import { HiUserAdd } from "react-icons/hi";
 import { MdDelete } from "react-icons/md";
 import UserModal from "../../components/Modal/UserModal";
+import Swal from "sweetalert2";
 
 const AdminSection = ({
   users,
@@ -37,10 +38,25 @@ const AdminSection = ({
   };
 
   const handleDeleteUser = (id) => {
-    const confirm = window.confirm("¿Estás seguro de eliminar este usuario?");
-    if (confirm) {
-      setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
-    }
+    Swal.fire({
+      title: "¿Estás seguro?",
+      text: "Esta acción eliminará al usuario.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
+        Swal.fire({
+          icon: "success",
+          title: "Eliminado",
+          text: "El usuario ha sido eliminado.",
+          timer: 1500,
+          showConfirmButton: false,
+        });
+      }
+    });
   };
 
   return (

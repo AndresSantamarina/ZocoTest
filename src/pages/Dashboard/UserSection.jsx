@@ -1,6 +1,7 @@
 import { FaEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { IoIosAddCircle } from "react-icons/io";
+import Swal from "sweetalert2";
 
 const UserSection = ({
   educationInput,
@@ -18,15 +19,20 @@ const UserSection = ({
 }) => {
   const handleSubmitEducation = (e) => {
     e.preventDefault();
-    if (educationInput.trim() === "") return;
-
+    if (educationInput.trim() === "") {
+      Swal.fire("Campo vacío", "Por favor ingresa un estudio.", "warning");
+      return;
+    }
+    console.log(editEducationIndex);
     if (editEducationIndex !== null) {
       const updated = [...educations];
       updated[editEducationIndex] = educationInput;
       setEducations(updated);
       setEditEducationIndex(null);
+      Swal.fire("Editado", "El estudio fue editado exitosamente.", "success");
     } else {
       setEducations([...educations, educationInput]);
+      Swal.fire("Agregado", "El estudio fue agregado exitosamente.", "success");
     }
 
     setEducationInput("");
@@ -34,21 +40,31 @@ const UserSection = ({
 
   const handleSubmitAddress = (e) => {
     e.preventDefault();
-    if (addressInput.trim() === "") return;
+    if (addressInput.trim() === "") {
+      Swal.fire("Campo vacío", "Por favor ingresa una dirección.", "warning");
+      return;
+    }
 
     if (editAddressIndex !== null) {
       const updated = [...addresses];
       updated[editAddressIndex] = addressInput;
       setAddresses(updated);
       setEditAddressIndex(null);
+      Swal.fire("Editado", "La dirección fue editada exitosamente.", "success");
     } else {
       setAddresses([...addresses, addressInput]);
+      Swal.fire(
+        "Agregada",
+        "La dirección fue agregada exitosamente.",
+        "success"
+      );
     }
 
     setAddressInput("");
   };
 
   const handleEditItem = (index, type) => {
+    console.log(index);
     if (type === "education") {
       setEducationInput(educations[index]);
       setEditEducationIndex(index);
@@ -59,19 +75,32 @@ const UserSection = ({
   };
 
   const handleDeleteItem = (index, type) => {
-    if (type === "education") {
-      setEducations(educations.filter((_, i) => i !== index));
-      if (editEducationIndex === index) {
-        setEditEducationIndex(null);
-        setEducationInput("");
+    Swal.fire({
+      title: "¿Estás seguro?",
+      text: "Esta acción no se puede deshacer",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        if (type === "education") {
+          setEducations(educations.filter((_, i) => i !== index));
+          if (editEducationIndex === index) {
+            setEditEducationIndex(null);
+            setEducationInput("");
+          }
+          Swal.fire("Eliminado", "El estudio ha sido eliminado.", "success");
+        } else {
+          setAddresses(addresses.filter((_, i) => i !== index));
+          if (editAddressIndex === index) {
+            setEditAddressIndex(null);
+            setAddressInput("");
+          }
+          Swal.fire("Eliminado", "La dirección ha sido eliminada.", "success");
+        }
       }
-    } else {
-      setAddresses(addresses.filter((_, i) => i !== index));
-      if (editAddressIndex === index) {
-        setEditAddressIndex(null);
-        setAddressInput("");
-      }
-    }
+    });
   };
 
   return (

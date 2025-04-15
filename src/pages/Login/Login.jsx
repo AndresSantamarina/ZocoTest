@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import "./Login.scss";
+import Swal from "sweetalert2";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -10,11 +11,19 @@ const Login = () => {
     const fakeUser = {
       id: "123",
       name: "Juan Pérez",
-      role: "admin", // o "user"
+      role: "user", // o "user"
     };
 
     sessionStorage.setItem("user", JSON.stringify(fakeUser));
-    navigate("/dashboard");
+    Swal.fire({
+      title: `¡Bienvenido, ${fakeUser.name}!`,
+      text: "Has iniciado sesión correctamente.",
+      icon: "success",
+      timer: 2000,
+      showConfirmButton: false,
+    }).then(() => {
+      navigate("/dashboard");
+    });
   };
 
   return (
