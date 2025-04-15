@@ -2,26 +2,60 @@ import { useEffect, useState } from "react";
 import "./UserModal.scss";
 import { IoClose } from "react-icons/io5";
 import Swal from "sweetalert2";
+import axios from "axios";
 
 const UserModal = ({ show, onClose, title, onSubmit, initialData = {} }) => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    password: "",
+    role: "user",
     education: "",
     address: "",
-    role: "user",
-    ...initialData,
   });
 
+  const [loading, setLoading] = useState(false);
+
   useEffect(() => {
-    setFormData({
-      name: "",
-      email: "",
-      education: "",
-      address: "",
-      role: "user",
-      ...initialData,
-    });
+    const fetchRelatedData = async () => {
+      setLoading(true);
+      try {
+        const [educationsRes, addressesRes] = await Promise.all([
+          axios.get(
+            `http://localhost:3001/educations?userId=${initialData.id}`
+          ),
+          axios.get(`http://localhost:3001/addresses?userId=${initialData.id}`),
+        ]);
+
+        setFormData({
+          ...initialData,
+          education: educationsRes.data[0]?.title || "",
+          address: addressesRes.data[0]?.address || "",
+        });
+      } catch (error) {
+        console.error("Error fetching related data:", error);
+        Swal.fire(
+          "Error",
+          "No se pudieron cargar los datos relacionados",
+          "error"
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (initialData) {
+      fetchRelatedData();
+    } else {
+      setFormData({
+        name: "",
+        email: "",
+        password: "",
+        role: "user",
+        education: "",
+        address: "",
+      });
+    }
   }, [initialData]);
 
   const handleChange = (e) => {
@@ -32,14 +66,6 @@ const UserModal = ({ show, onClose, title, onSubmit, initialData = {} }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     onSubmit(formData);
-    Swal.fire({
-      icon: "success",
-      title: "Guardado correctamente",
-      text: "Los datos del usuario fueron guardados.",
-      timer: 1500,
-      showConfirmButton: false,
-    });
-    onClose();
   };
 
   if (!show) return null;
@@ -70,6 +96,16 @@ const UserModal = ({ show, onClose, title, onSubmit, initialData = {} }) => {
               type="email"
               name="email"
               value={formData.email}
+              onChange={handleChange}
+              required
+            />
+          </label>
+          <label>
+            Password:
+            <input
+              type="password"
+              name="password"
+              value={formData.password}
               onChange={handleChange}
               required
             />

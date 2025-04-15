@@ -2,79 +2,161 @@ import { FaEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { IoIosAddCircle } from "react-icons/io";
 import Swal from "sweetalert2";
+import { useContext, useEffect, useState } from "react";
+import axios from "axios";
+import { AuthContext } from "../../context/AuthContext";
 
-const UserSection = ({
-  educationInput,
-  setEducationInput,
-  addressInput,
-  setAddressInput,
-  educations,
-  setEducations,
-  addresses,
-  setAddresses,
-  editEducationIndex,
-  setEditEducationIndex,
-  editAddressIndex,
-  setEditAddressIndex,
-}) => {
-  const handleSubmitEducation = (e) => {
+const UserSection = () => {
+  const { user } = useContext(AuthContext);
+  const [educationInput, setEducationInput] = useState("");
+  const [addressInput, setAddressInput] = useState("");
+  const [educations, setEducations] = useState([]);
+  const [addresses, setAddresses] = useState([]);
+  const [editEducationIndex, setEditEducationIndex] = useState(null);
+  const [editAddressIndex, setEditAddressIndex] = useState(null);
+
+  useEffect(() => {
+    if (!user) return;
+
+    const fetchUserData = async () => {
+      try {
+        const [educationsRes, addressesRes] = await Promise.all([
+          axios.get(`http://localhost:3001/educations?userId=${user.id}`),
+          axios.get(`http://localhost:3001/addresses?userId=${user.id}`),
+        ]);
+
+        setEducations(educationsRes.data);
+        setAddresses(addressesRes.data);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        Swal.fire(
+          "Error",
+          "No se pudieron cargar los datos del usuario",
+          "error"
+        );
+      }
+    };
+
+    fetchUserData();
+  }, [user]);
+
+  const handleSubmitEducation = async (e) => {
     e.preventDefault();
     if (educationInput.trim() === "") {
       Swal.fire("Campo vacío", "Por favor ingresa un estudio.", "warning");
       return;
     }
-    console.log(editEducationIndex);
-    if (editEducationIndex !== null) {
-      const updated = [...educations];
-      updated[editEducationIndex] = educationInput;
-      setEducations(updated);
-      setEditEducationIndex(null);
-      Swal.fire("Editado", "El estudio fue editado exitosamente.", "success");
-    } else {
-      setEducations([...educations, educationInput]);
-      Swal.fire("Agregado", "El estudio fue agregado exitosamente.", "success");
-    }
 
-    setEducationInput("");
+    try {
+      if (editEducationIndex !== null) {
+        // Editar estudio existente
+        const educationToUpdate = educations[editEducationIndex];
+        const updatedEducation = {
+          ...educationToUpdate,
+          title: educationInput,
+        };
+
+        await axios.put(
+          `http://localhost:3001/educations/${educationToUpdate.id}`,
+          updatedEducation
+        );
+
+        const updated = [...educations];
+        updated[editEducationIndex] = updatedEducation;
+        setEducations(updated);
+        setEditEducationIndex(null);
+        Swal.fire("Editado", "El estudio fue editado exitosamente.", "success");
+      } else {
+        // Crear nuevo estudio
+        const newEducation = {
+          id: Date.now(),
+          userId: user.id,
+          title: educationInput,
+        };
+
+        await axios.post("http://localhost:3001/educations", newEducation);
+        setEducations([...educations, newEducation]);
+        Swal.fire(
+          "Agregado",
+          "El estudio fue agregado exitosamente.",
+          "success"
+        );
+      }
+
+      setEducationInput("");
+    } catch (error) {
+      console.error("Error saving education:", error);
+      Swal.fire("Error", "No se pudo guardar el estudio", "error");
+    }
   };
 
-  const handleSubmitAddress = (e) => {
+  const handleSubmitAddress = async (e) => {
     e.preventDefault();
     if (addressInput.trim() === "") {
-      Swal.fire("Campo vacío", "Por favor ingresa una dirección.", "warning");
+      Swal.fire("Campo vacío", "Por favor completa el campo.", "warning");
       return;
     }
 
-    if (editAddressIndex !== null) {
-      const updated = [...addresses];
-      updated[editAddressIndex] = addressInput;
-      setAddresses(updated);
-      setEditAddressIndex(null);
-      Swal.fire("Editado", "La dirección fue editada exitosamente.", "success");
-    } else {
-      setAddresses([...addresses, addressInput]);
-      Swal.fire(
-        "Agregada",
-        "La dirección fue agregada exitosamente.",
-        "success"
-      );
-    }
+    try {
+      if (editAddressIndex !== null) {
+        // Editar dirección existente
+        const addressToUpdate = addresses[editAddressIndex];
+        const updatedAddress = {
+          ...addressToUpdate,
+          address: addressInput,
+        };
 
-    setAddressInput("");
+        await axios.put(
+          `http://localhost:3001/addresses/${addressToUpdate.id}`,
+          updatedAddress
+        );
+
+        const updated = [...addresses];
+        updated[editAddressIndex] = updatedAddress;
+        setAddresses(updated);
+        setEditAddressIndex(null);
+        Swal.fire(
+          "Editado",
+          "La dirección fue editada exitosamente.",
+          "success"
+        );
+      } else {
+        // Crear nueva dirección
+        const newAddress = {
+          id: Date.now(),
+          userId: user.id,
+          address: addressInput,
+        };
+
+        await axios.post("http://localhost:3001/addresses", newAddress);
+        setAddresses([...addresses, newAddress]);
+        Swal.fire(
+          "Agregada",
+          "La dirección fue agregada exitosamente.",
+          "success"
+        );
+      }
+
+      setAddressInput("");
+    } catch (error) {
+      console.error("Error saving address:", error);
+      Swal.fire("Error", "No se pudo guardar la dirección", "error");
+    }
   };
 
   const handleEditItem = (index, type) => {
-    console.log(index);
     if (type === "education") {
-      setEducationInput(educations[index]);
+      const education = educations[index];
+      setEducationInput(education.title);
       setEditEducationIndex(index);
     } else {
-      setAddressInput(addresses[index]);
+      const address = addresses[index];
+      setAddressInput(address.address);
       setEditAddressIndex(index);
     }
   };
 
-  const handleDeleteItem = (index, type) => {
+  const handleDeleteItem = async (index, type) => {
     Swal.fire({
       title: "¿Estás seguro?",
       text: "Esta acción no se puede deshacer",
@@ -82,35 +164,52 @@ const UserSection = ({
       showCancelButton: true,
       confirmButtonText: "Sí, eliminar",
       cancelButtonText: "Cancelar",
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        if (type === "education") {
-          setEducations(educations.filter((_, i) => i !== index));
-          if (editEducationIndex === index) {
-            setEditEducationIndex(null);
-            setEducationInput("");
+        try {
+          if (type === "education") {
+            const educationId = educations[index].id;
+            await axios.delete(
+              `http://localhost:3001/educations/${educationId}`
+            );
+            setEducations(educations.filter((_, i) => i !== index));
+            if (editEducationIndex === index) {
+              setEditEducationIndex(null);
+              setEducationInput("");
+            }
+            Swal.fire("Eliminado", "El estudio ha sido eliminado.", "success");
+          } else {
+            const addressId = addresses[index].id;
+            await axios.delete(`http://localhost:3001/addresses/${addressId}`);
+            setAddresses(addresses.filter((_, i) => i !== index));
+            if (editAddressIndex === index) {
+              setEditAddressIndex(null);
+              setAddressInput("");
+            }
+            Swal.fire(
+              "Eliminado",
+              "La dirección ha sido eliminada.",
+              "success"
+            );
           }
-          Swal.fire("Eliminado", "El estudio ha sido eliminado.", "success");
-        } else {
-          setAddresses(addresses.filter((_, i) => i !== index));
-          if (editAddressIndex === index) {
-            setEditAddressIndex(null);
-            setAddressInput("");
-          }
-          Swal.fire("Eliminado", "La dirección ha sido eliminada.", "success");
+        } catch (error) {
+          console.error("Error deleting item:", error);
+          Swal.fire("Error", "No se pudo eliminar el elemento", "error");
         }
       }
     });
   };
 
+  if (!user) return <p>Cargando...</p>;
+
   return (
     <div className="user-section">
       <h3>Mi Perfil</h3>
       <p>
-        <strong>Nombre:</strong> Usuario Ejemplo
+        <strong>Nombre:</strong> {user.name}
       </p>
       <p>
-        <strong>Email:</strong> usuario@ejemplo.com
+        <strong>Email:</strong> {user.email}
       </p>
 
       <div className="related-data">
@@ -129,8 +228,8 @@ const UserSection = ({
           </form>
           <ul>
             {educations.map((item, index) => (
-              <li key={index}>
-                {item}
+              <li key={item.id}>
+                {item.title}
                 <button
                   className="button-edit"
                   onClick={() => handleEditItem(index, "education")}
@@ -162,8 +261,8 @@ const UserSection = ({
           </form>
           <ul>
             {addresses.map((item, index) => (
-              <li key={index}>
-                {item}
+              <li key={item.id}>
+                {item.address}
                 <button
                   className="button-edit"
                   onClick={() => handleEditItem(index, "address")}

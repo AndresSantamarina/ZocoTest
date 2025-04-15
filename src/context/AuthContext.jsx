@@ -7,18 +7,29 @@ const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [role, setRole] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const savedToken = sessionStorage.getItem("token");
-    const savedUser = sessionStorage.getItem("user");
+    const initializeAuth = async () => {
+      const savedToken = sessionStorage.getItem("token");
+      const savedUser = sessionStorage.getItem("user");
 
-    if (savedToken && savedUser) {
-      setToken(savedToken);
-      const parsedUser = JSON.parse(savedUser);
-      setUser(parsedUser);
-      setRole(parsedUser.role);
-      setIsAuthenticated(true);
-    }
+      if (savedToken && savedUser) {
+        try {
+          const parsedUser = JSON.parse(savedUser);
+          setToken(savedToken);
+          setUser(parsedUser);
+          setRole(parsedUser.role);
+          setIsAuthenticated(true);
+        } catch (error) {
+          console.error("Error parsing user data:", error);
+          logout();
+        }
+      }
+      setLoading(false);
+    };
+
+    initializeAuth();
   }, []);
 
   const login = (userData, token) => {
@@ -41,9 +52,9 @@ const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ token, user, role, isAuthenticated, login, logout }}
+      value={{ token, user, role, isAuthenticated, loading, login, logout }}
     >
-      {children}
+      {!loading && children}
     </AuthContext.Provider>
   );
 };

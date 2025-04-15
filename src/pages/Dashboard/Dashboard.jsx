@@ -1,61 +1,19 @@
 import "./Dashboard.scss";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import AdminSection from "./AdminSection";
 import UserSection from "./UserSection";
-
-const userRole = sessionStorage.getItem("role") || "user";
+import { AuthContext } from "../../context/AuthContext";
 
 const Dashboard = () => {
-  const [showModal, setShowModal] = useState(false);
-  const [modalTitle, setModalTitle] = useState("Crear Usuario");
-  const [selectedUser, setSelectedUser] = useState(null);
-  const [educationInput, setEducationInput] = useState("");
-  const [addressInput, setAddressInput] = useState("");
-  const [editEducationIndex, setEditEducationIndex] = useState(null);
-  const [editAddressIndex, setEditAddressIndex] = useState(null);
-  const [educations, setEducations] = useState([]);
-  const [addresses, setAddresses] = useState([]);
-
-  const [users, setUsers] = useState([
-    {
-      id: 1,
-      name: "Ana",
-      email: "ana@ejemplo.com",
-      role: "user",
-      education: "Tecnicatura en Programación",
-      address: "Calle Falsa 123",
-    },
-  ]);
+  const { user, role } = useContext(AuthContext);
 
   return (
     <div className="dashboard">
       <h2>Dashboard</h2>
-      {userRole === "admin" ? (
-        <AdminSection
-          users={users}
-          setUsers={setUsers}
-          showModal={showModal}
-          setShowModal={setShowModal}
-          modalTitle={modalTitle}
-          setModalTitle={setModalTitle}
-          selectedUser={selectedUser}
-          setSelectedUser={setSelectedUser}
-        />
-      ) : userRole === "user" ? (
-        <UserSection
-          educationInput={educationInput}
-          setEducationInput={setEducationInput}
-          addressInput={addressInput}
-          setAddressInput={setAddressInput}
-          educations={educations}
-          setEducations={setEducations}
-          addresses={addresses}
-          setAddresses={setAddresses}
-          editEducationIndex={editEducationIndex}
-          setEditEducationIndex={setEditEducationIndex}
-          editAddressIndex={editAddressIndex}
-          setEditAddressIndex={setEditAddressIndex}
-        />
+      {role === "admin" ? (
+        <AdminSection />
+      ) : role === "user" ? (
+        <UserSection />
       ) : (
         <p>Bienvenido. Iniciá sesión para ver tu información.</p>
       )}
