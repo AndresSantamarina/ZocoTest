@@ -10,6 +10,12 @@ const Dashboard = () => {
   const [showModal, setShowModal] = useState(false);
   const [modalTitle, setModalTitle] = useState("Crear Usuario");
   const [selectedUser, setSelectedUser] = useState(null);
+  const [estudioInput, setEstudioInput] = useState("");
+  const [direccionInput, setDireccionInput] = useState("");
+  const [editEstudioIndex, setEditEstudioIndex] = useState(null);
+  const [editDireccionIndex, setEditDireccionIndex] = useState(null);
+  const [estudios, setEstudios] = useState([]);
+  const [direcciones, setDirecciones] = useState([]);
 
   const [users, setUsers] = useState([
     {
@@ -47,6 +53,70 @@ const Dashboard = () => {
     }
   };
 
+  const handleDeleteUser = (id) => {
+    const confirm = window.confirm("¿Estás seguro de eliminar este usuario?");
+    if (confirm) {
+      setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
+    }
+  };
+
+  const handleSubmitEstudio = (e) => {
+    e.preventDefault();
+    if (estudioInput.trim() === "") return;
+
+    if (editEstudioIndex !== null) {
+      const updated = [...estudios];
+      updated[editEstudioIndex] = estudioInput;
+      setEstudios(updated);
+      setEditEstudioIndex(null);
+    } else {
+      setEstudios([...estudios, estudioInput]);
+    }
+
+    setEstudioInput("");
+  };
+
+  const handleSubmitDireccion = (e) => {
+    e.preventDefault();
+    if (direccionInput.trim() === "") return;
+
+    if (editDireccionIndex !== null) {
+      const updated = [...direcciones];
+      updated[editDireccionIndex] = direccionInput;
+      setDirecciones(updated);
+      setEditDireccionIndex(null);
+    } else {
+      setDirecciones([...direcciones, direccionInput]);
+    }
+
+    setDireccionInput("");
+  };
+
+  const handleEditItem = (index, type) => {
+    if (type === "estudio") {
+      setEstudioInput(estudios[index]);
+      setEditEstudioIndex(index);
+    } else {
+      setDireccionInput(direcciones[index]);
+      setEditDireccionIndex(index);
+    }
+  };
+
+  const handleDeleteItem = (index, type) => {
+    if (type === "estudio") {
+      setEstudios(estudios.filter((_, i) => i !== index));
+      if (editEstudioIndex === index) {
+        setEditEstudioIndex(null);
+        setEstudioInput("");
+      }
+    } else {
+      setDirecciones(direcciones.filter((_, i) => i !== index));
+      if (editDireccionIndex === index) {
+        setEditDireccionIndex(null);
+        setDireccionInput("");
+      }
+    }
+  };
   return (
     <div className="dashboard">
       <h2>Dashboard</h2>
@@ -88,7 +158,10 @@ const Dashboard = () => {
                     >
                       <FaEdit />
                     </button>
-                    <button className="button-delete">
+                    <button
+                      className="button-delete"
+                      onClick={() => handleDeleteUser(user.id)}
+                    >
                       <MdDelete />
                     </button>
                   </td>
@@ -109,42 +182,68 @@ const Dashboard = () => {
         <div className="related-data">
           <div className="section">
             <h4>Estudios</h4>
-            <form className="career-form">
-              <input type="text" id="career" placeholder="Agregar estudio" />
+            <form className="career-form" onSubmit={handleSubmitEstudio}>
+              <input
+                type="text"
+                placeholder="Agregar o editar estudio"
+                value={estudioInput}
+                onChange={(e) => setEstudioInput(e.target.value)}
+              />
               <button className="button-confirm">
                 <IoIosAddCircle />
               </button>
             </form>
             <ul>
-              <li>
-                Licenciatura en Informática
-                <button className="button-edit">
-                  <FaEdit />
-                </button>
-                <button className="button-delete">
-                  <MdDelete />
-                </button>
-              </li>
+              {estudios.map((item, index) => (
+                <li key={index}>
+                  {item}
+                  <button
+                    className="button-edit"
+                    onClick={() => handleEditItem(index, "estudio")}
+                  >
+                    <FaEdit />
+                  </button>
+                  <button
+                    className="button-delete"
+                    onClick={() => handleDeleteItem(index, "estudio")}
+                  >
+                    <MdDelete />
+                  </button>
+                </li>
+              ))}
             </ul>
           </div>
           <div className="section">
             <h4>Direcciones</h4>
-            <form className="address-form">
-              <input type="text" id="address" placeholder="Agregar dirección" />
+            <form className="address-form" onSubmit={handleSubmitDireccion}>
+              <input
+                type="text"
+                placeholder="Agregar o editar dirección"
+                value={direccionInput}
+                onChange={(e) => setDireccionInput(e.target.value)}
+              />
               <button className="button-confirm">
                 <IoIosAddCircle />
               </button>
             </form>
             <ul>
-              <li>
-                Calle Falsa 123
-                <button className="button-edit">
-                  <FaEdit />
-                </button>
-                <button className="button-delete">
-                  <MdDelete />
-                </button>
-              </li>
+              {direcciones.map((item, index) => (
+                <li key={index}>
+                  {item}
+                  <button
+                    className="button-edit"
+                    onClick={() => handleEditItem(index, "direccion")}
+                  >
+                    <FaEdit />
+                  </button>
+                  <button
+                    className="button-delete"
+                    onClick={() => handleDeleteItem(index, "direccion")}
+                  >
+                    <MdDelete />
+                  </button>
+                </li>
+              ))}
             </ul>
           </div>
         </div>
