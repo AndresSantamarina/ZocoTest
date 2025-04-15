@@ -6,12 +6,21 @@ const UserModal = ({ show, onClose, title, onSubmit, initialData = {} }) => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    education: "",
+    address: "",
     role: "user",
     ...initialData,
   });
 
   useEffect(() => {
-    setFormData({ name: "", email: "", role: "user", ...initialData });
+    setFormData({
+      name: "",
+      email: "",
+      education: "",
+      address: "",
+      role: "user",
+      ...initialData,
+    });
   }, [initialData]);
 
   const handleChange = (e) => {
@@ -58,11 +67,24 @@ const UserModal = ({ show, onClose, title, onSubmit, initialData = {} }) => {
             />
           </label>
           <label>
-            Rol:
-            <select name="role" value={formData.role} onChange={handleChange}>
-              <option value="user">Usuario</option>
-              <option value="admin">Admin</option>
-            </select>
+            Estudios:
+            <input
+              type="text"
+              name="education"
+              value={formData.education}
+              onChange={handleChange}
+              required
+            />
+          </label>
+          <label>
+            Dirección:
+            <input
+              type="text"
+              name="address"
+              value={formData.address}
+              onChange={handleChange}
+              required
+            />
           </label>
           <button type="submit" className="button-confirm">
             Guardar

@@ -1,11 +1,13 @@
-import React from 'react';
+import { Navigate, Outlet } from "react-router-dom";
 
 const UserRoutes = () => {
-    return (
-        <div>
-            
-        </div>
-    );
+  const user = JSON.parse(sessionStorage.getItem("user"));
+
+  return user && user.role === "user" ? (
+    <Outlet />
+  ) : (
+    <Navigate to="/dashboard" />
+  );
 };
 
 export default UserRoutes;
