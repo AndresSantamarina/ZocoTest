@@ -51,104 +51,139 @@ const AdminSection = () => {
 
   const handleSubmit = async (data) => {
     try {
-      const { education, address, ...userData } = data;
-
-      if (selectedUser) {
+      const { educations = [], addresses = [], ...userData } = data;
+      
+      if (userData.id) {
         // 1. Actualizar datos básicos del usuario
-        await axios.put(
-          `http://localhost:3001/users/${selectedUser.id}`,
-          userData
+        await axios.put(`http://localhost:3001/users/${userData.id}`, userData);
+        
+        // 2. Manejar estudios - SOLUCIÓN PARA USUARIOS SIN ESTUDIOS PREVIOS
+        const existingEducations = await axios.get(
+          `http://localhost:3001/educations?userId=${userData.id}`
         );
-
-        // 2. Obtener estudios y direcciones existentes
-        const [existingEducations, existingAddresses] = await Promise.all([
-          axios.get(
-            `http://localhost:3001/educations?userId=${selectedUser.id}`
-          ),
-          axios.get(
-            `http://localhost:3001/addresses?userId=${selectedUser.id}`
-          ),
-        ]);
-
-        // 3. Actualizar estudios si hay cambios
-        if (education) {
-          if (existingEducations.data.length > 0) {
-            await axios.put(
-              `http://localhost:3001/educations/${existingEducations.data[0].id}`,
-              {
-                ...existingEducations.data[0],
-                title: education,
+  
+        // Para cada estudio en el formulario
+        await Promise.all(
+          educations.map(async (edu) => {
+            const educationData = {
+              title: edu.title,
+              userId: userData.id,
+              ...(edu.year && { year: edu.year })
+            };
+  
+            if (edu.id) {
+              // Verificar si el estudio existe antes de actualizar
+              try {
+                await axios.get(`http://localhost:3001/educations/${edu.id}`);
+                return axios.put(`http://localhost:3001/educations/${edu.id}`, educationData);
+              } catch (error) {
+                // Si no existe, crear uno nuevo
+                return axios.post('http://localhost:3001/educations', {
+                  ...educationData,
+                  id: Date.now()
+                });
               }
-            );
-          } else {
-            await axios.post("http://localhost:3001/educations", {
-              id: Date.now(),
-              userId: selectedUser.id,
-              title: education,
-            });
-          }
-        }
-
-        // 4. Actualizar direcciones si hay cambios
-        if (address) {
-          if (existingAddresses.data.length > 0) {
-            await axios.put(
-              `http://localhost:3001/addresses/${existingAddresses.data[0].id}`,
-              {
-                ...existingAddresses.data[0],
-                address: address,
-              }
-            );
-          } else {
-            await axios.post("http://localhost:3001/addresses", {
-              id: Date.now(),
-              userId: selectedUser.id,
-              address: address,
-            });
-          }
-        }
-
-        // Actualizar estado local
-        const updatedUsers = users.map((u) =>
-          u.id === selectedUser.id ? { ...u, ...userData } : u
+            } else {
+              // Crear nuevo estudio
+              return axios.post('http://localhost:3001/educations', {
+                ...educationData,
+                id: Date.now()
+              });
+            }
+          })
         );
-        setUsers(updatedUsers);
-        setShowModal(false);
+  
+        // Eliminar estudios existentes que no están en el formulario
+        const educationsToKeep = educations.map(edu => edu.id);
+        await Promise.all(
+          existingEducations.data
+            .filter(existing => !educationsToKeep.includes(existing.id))
+            .map(edu => axios.delete(`http://localhost:3001/educations/${edu.id}`))
+        );
+  
+        // 3. Manejar direcciones (misma lógica que estudios)
+        const existingAddresses = await axios.get(
+          `http://localhost:3001/addresses?userId=${userData.id}`
+        );
+  
+        await Promise.all(
+          addresses.map(async (addr) => {
+            const addressData = {
+              address: addr.address,
+              userId: userData.id,
+              ...(addr.city && { city: addr.city })
+            };
+  
+            if (addr.id) {
+              try {
+                await axios.get(`http://localhost:3001/addresses/${addr.id}`);
+                return axios.put(`http://localhost:3001/addresses/${addr.id}`, addressData);
+              } catch {
+                return axios.post('http://localhost:3001/addresses', {
+                  ...addressData,
+                  id: Date.now() + 1 // ID diferente a estudios
+                });
+              }
+            } else {
+              return axios.post('http://localhost:3001/addresses', {
+                ...addressData,
+                id: Date.now() + 1
+              });
+            }
+          })
+        );
+  
+        // Eliminar direcciones existentes que no están en el formulario
+        const addressesToKeep = addresses.map(addr => addr.id);
+        await Promise.all(
+          existingAddresses.data
+            .filter(existing => !addressesToKeep.includes(existing.id))
+            .map(addr => axios.delete(`http://localhost:3001/addresses/${addr.id}`))
+        );
+  
         Swal.fire("Éxito", "Usuario actualizado correctamente", "success");
       } else {
-        // Crear nuevo usuario (sin estudios/direcciones)
-        const { education, address, ...userData } = data;
+        // Crear nuevo usuario
         const newUser = { ...userData, id: Date.now() };
-        await axios.post("http://localhost:3001/users", newUser);
-        setUsers([...users, newUser]);
-
-        if (education) {
-          await axios.post("http://localhost:3001/educations", {
-            id: Date.now() + 1,
-            userId: newUser.id,
-            title: education,
-          });
-        }
-        if (address) {
-          await axios.post("http://localhost:3001/addresses", {
-            id: Date.now() + 2,
-            userId: newUser.id,
-            address: address,
-          });
-        }
-        setShowModal(false);
-        Swal.fire("Éxito", "Usuario guardado correctamente", "success");
+        const userResponse = await axios.post("http://localhost:3001/users", newUser);
+  
+        // Crear estudios
+        await Promise.all(
+          educations.map(edu => 
+            axios.post("http://localhost:3001/educations", {
+              title: edu.title,
+              userId: newUser.id,
+              id: Date.now() + Math.floor(Math.random() * 1000),
+            })
+          )
+        );
+        
+        // Crear direcciones
+        await Promise.all(
+          addresses.map(addr => 
+            axios.post("http://localhost:3001/addresses", {
+              address: addr.address,
+              userId: newUser.id,
+              id: Date.now() + Math.floor(Math.random() * 1000),
+            })
+          )
+        );
+  
+        Swal.fire("Éxito", "Usuario creado correctamente", "success");
       }
-
+      
       // Refrescar datos
       const [usersRes, educationsRes, addressesRes] = await Promise.all([
         axios.get("http://localhost:3001/users"),
         axios.get("http://localhost:3001/educations"),
-        axios.get("http://localhost:3001/addresses"),
+        axios.get("http://localhost:3001/addresses")
       ]);
+      
       setUsers(usersRes.data);
       setEducations(educationsRes.data);
       setAddresses(addressesRes.data);
+      
+      setShowModal(false);
     } catch (error) {
       console.error("Error saving user:", error);
       Swal.fire("Error", "No se pudo guardar el usuario", "error");
