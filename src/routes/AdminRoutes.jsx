@@ -1,9 +1,11 @@
+import { useContext } from "react";
 import { Navigate, Outlet } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
 
 const AdminRoutes = () => {
-  const user = JSON.parse(sessionStorage.getItem("user"));
+  const { isAuthenticated, role } = useContext(AuthContext);
 
-  return user && user.role === "admin" ? (
+  return isAuthenticated && role === "admin" ? (
     <Outlet />
   ) : (
     <Navigate to="/dashboard" />

@@ -1,9 +1,11 @@
+import { useContext } from "react";
 import { Navigate, Outlet } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
 
 const UserRoutes = () => {
-  const user = JSON.parse(sessionStorage.getItem("user"));
+  const { isAuthenticated, role } = useContext(AuthContext);
 
-  return user && user.role === "user" ? (
+  return isAuthenticated && role === "user" ? (
     <Outlet />
   ) : (
     <Navigate to="/dashboard" />
