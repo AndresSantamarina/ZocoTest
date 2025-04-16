@@ -1,10 +1,6 @@
-import { useContext } from "react";
-import { AuthContext } from "../../context/AuthContext";
 import "./Home.scss";
 
 const Home = () => {
-  const { user } = useContext(AuthContext);
-
   return (
     <section className="home">
       <div className="home__container">

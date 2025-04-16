@@ -34,29 +34,9 @@
       "title": "Posgrado en UX"
     },
     {
-      "title": "Programación",
-      "userId": "1744738921183",
-      "id": "1744738921215"
-    },
-    {
-      "id": "1744768919106",
-      "userId": "1744738921183",
-      "title": "Programación"
-    },
-    {
-      "id": "1744768923097",
-      "userId": "1744738921183",
-      "title": "Programación"
-    },
-    {
-      "id": "1744768926171",
-      "userId": "1744738921183",
-      "title": "Programación"
-    },
-    {
-      "id": "1744768929194",
-      "userId": "1744738921183",
-      "title": "Programación"
+      "id": "b01b",
+      "title": "1",
+      "userId": "1744738921183"
     }
   ],
   "addresses": [
@@ -71,24 +51,24 @@
       "id": "1744738921247"
     },
     {
-      "id": "1744768933789",
+      "address": "Programación",
       "userId": "1744738921183",
-      "address": "Programación"
+      "id": "1744768933789"
     },
     {
-      "id": "1744768936799",
+      "address": "Programación",
       "userId": "1744738921183",
-      "address": "Programación"
+      "id": "1744768936799"
     },
     {
-      "id": "1744768940532",
+      "address": "Programación",
       "userId": "1744738921183",
-      "address": "Programación"
+      "id": "1744768940532"
     },
     {
-      "id": "1744768943512",
+      "address": "Programación",
       "userId": "1744738921183",
-      "address": "Programación"
+      "id": "1744768943512"
     }
   ]
 }

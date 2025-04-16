@@ -62,161 +62,37 @@ const AdminSection = () => {
     setShowModal(true);
   };
 
-  const handleSubmit = async (data) => {
-    try {
-      const {
-        educations: formEducations = [],
-        addresses: formAddresses = [],
-        ...userData
-      } = data;
+  const handleSubmit = async (result) => {
+    const fetchData = async () => {
+      try {
+        const [usersRes, educationsRes, addressesRes] = await Promise.all([
+          axios.get("http://localhost:3001/users"),
+          axios.get("http://localhost:3001/educations"),
+          axios.get("http://localhost:3001/addresses"),
+        ]);
 
-      if (userData.id) {
-        await axios.put(`http://localhost:3001/users/${userData.id}`, userData);
-
-        const existingEducations = await axios.get(
-          `http://localhost:3001/educations?userId=${userData.id}`
+        const filteredUsers = usersRes.data.filter(
+          (user) => user.role === "user"
         );
+        const enrichedUsers = filteredUsers.map((user) => ({
+          ...user,
+          educations: educationsRes.data.filter(
+            (edu) => edu.userId === user.id
+          ),
+          addresses: addressesRes.data.filter(
+            (addr) => addr.userId === user.id
+          ),
+        }));
 
-        await Promise.all(
-          formEducations.map(async (edu) => {
-            const educationData = {
-              title: edu.title,
-              userId: userData.id,
-            };
-
-            if (edu.id) {
-              try {
-                await axios.get(`http://localhost:3001/educations/${edu.id}`);
-                return axios.put(
-                  `http://localhost:3001/educations/${edu.id}`,
-                  educationData
-                );
-              } catch (error) {
-                return axios.post("http://localhost:3001/educations", {
-                  ...educationData,
-                  id: Date.now().toString(),
-                });
-              }
-            } else {
-              return axios.post("http://localhost:3001/educations", {
-                ...educationData,
-                id: Date.now().toString(),
-              });
-            }
-          })
-        );
-
-        const educationsToKeep = formEducations.map((edu) => edu.id);
-        await Promise.all(
-          existingEducations.data
-            .filter((existing) => !educationsToKeep.includes(existing.id))
-            .map((edu) =>
-              axios.delete(`http://localhost:3001/educations/${edu.id}`)
-            )
-        );
-
-        const existingAddresses = await axios.get(
-          `http://localhost:3001/addresses?userId=${userData.id}`
-        );
-
-        await Promise.all(
-          formAddresses.map(async (addr) => {
-            const addressData = {
-              address: addr.address,
-              userId: userData.id,
-            };
-
-            if (addr.id) {
-              try {
-                await axios.get(`http://localhost:3001/addresses/${addr.id}`);
-                return axios.put(
-                  `http://localhost:3001/addresses/${addr.id}`,
-                  addressData
-                );
-              } catch {
-                return axios.post("http://localhost:3001/addresses", {
-                  ...addressData,
-                  id: Date.now().toString() + 1,
-                });
-              }
-            } else {
-              return axios.post("http://localhost:3001/addresses", {
-                ...addressData,
-                id: Date.now().toString() + 1,
-              });
-            }
-          })
-        );
-
-        const addressesToKeep = formAddresses.map((addr) => addr.id);
-        await Promise.all(
-          existingAddresses.data
-            .filter((existing) => !addressesToKeep.includes(existing.id))
-            .map((addr) =>
-              axios.delete(`http://localhost:3001/addresses/${addr.id}`)
-            )
-        );
-
-        Swal.fire("Éxito", "Usuario actualizado correctamente", "success");
-      } else {
-        const newUser = { ...userData, id: Date.now().toString() };
-        const userResponse = await axios.post(
-          "http://localhost:3001/users",
-          newUser
-        );
-
-        await Promise.all(
-          formEducations.map((edu) =>
-            axios.post("http://localhost:3001/educations", {
-              title: edu.title,
-              userId: newUser.id,
-              id: `${Date.now().toString()}-${Math.floor(
-                Math.random() * 1000
-              )}`,
-            })
-          )
-        );
-
-        await Promise.all(
-          formAddresses.map((addr) =>
-            axios.post("http://localhost:3001/addresses", {
-              address: addr.address,
-              userId: newUser.id,
-              id: `${Date.now().toString()}-${Math.floor(
-                Math.random() * 1000
-              )}`,
-            })
-          )
-        );
-
-        Swal.fire("Éxito", "Usuario creado correctamente", "success");
+        setUsers(enrichedUsers);
+        setEducations(educationsRes.data);
+        setAddresses(addressesRes.data);
+      } catch (error) {
+        console.error("Error al cargar datos:", error);
       }
+    };
 
-      const [usersRes, educationsRes, addressesRes] = await Promise.all([
-        axios.get("http://localhost:3001/users"),
-        axios.get("http://localhost:3001/educations"),
-        axios.get("http://localhost:3001/addresses"),
-      ]);
-
-      const filteredUsers = usersRes.data.filter(
-        (user) => user.role === "user"
-      );
-
-      const enrichedUsers = filteredUsers.map((user) => ({
-        ...user,
-        educations: educationsRes.data.filter((edu) => edu.userId === user.id),
-        addresses: addressesRes.data.filter((addr) => addr.userId === user.id),
-      }));
-
-      setUsers(enrichedUsers);
-      setEducations(educationsRes.data);
-      setAddresses(addressesRes.data);
-
-      setShowModal(false);
-    } catch (error) {
-      console.error("Error saving user:", error);
-      Swal.fire("Error", "No se pudo guardar el usuario", "error");
-    }
+    fetchData();
   };
 
   const handleDeleteUser = async (id) => {
@@ -318,40 +194,7 @@ const AdminSection = () => {
           setSelectedUser(null);
         }}
         title={modalTitle}
-        onSubmit={(result) => {
-          const fetchData = async () => {
-            try {
-              const [usersRes, educationsRes, addressesRes] = await Promise.all(
-                [
-                  axios.get("http://localhost:3001/users"),
-                  axios.get("http://localhost:3001/educations"),
-                  axios.get("http://localhost:3001/addresses"),
-                ]
-              );
-
-              const filteredUsers = usersRes.data.filter(
-                (user) => user.role === "user"
-              );
-              const enrichedUsers = filteredUsers.map((user) => ({
-                ...user,
-                educations: educationsRes.data.filter(
-                  (edu) => edu.userId === user.id
-                ),
-                addresses: addressesRes.data.filter(
-                  (addr) => addr.userId === user.id
-                ),
-              }));
-
-              setUsers(enrichedUsers);
-              setEducations(educationsRes.data);
-              setAddresses(addressesRes.data);
-            } catch (error) {
-              console.error("Error al cargar datos:", error);
-            }
-          };
-
-          fetchData();
-        }}
+        onSubmit={handleSubmit}
         initialData={selectedUser}
       />
       <div className="user-table">
