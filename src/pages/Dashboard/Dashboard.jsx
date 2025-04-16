@@ -9,14 +9,12 @@ const Dashboard = () => {
 
   return (
     <div className="dashboard">
-      <h2>Dashboard</h2>
+      <h2>¡Bienvenido, {user.name}!</h2>
       {role === "admin" ? (
         <AdminSection />
       ) : role === "user" ? (
         <UserSection />
-      ) : (
-        <p>Bienvenido. Iniciá sesión para ver tu información.</p>
-      )}
+      ) : null}
     </div>
   );
 };

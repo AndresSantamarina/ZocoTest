@@ -1,5 +1,5 @@
 import { FaEdit } from "react-icons/fa";
-import { MdDelete } from "react-icons/md";
+import { MdCancel, MdDelete } from "react-icons/md";
 import { IoIosAddCircle } from "react-icons/io";
 import Swal from "sweetalert2";
 import { useContext, useEffect, useState } from "react";
@@ -200,11 +200,21 @@ const UserSection = () => {
     });
   };
 
+  const handleCancelEdit = (type) => {
+    if (type === "education") {
+      setEditEducationIndex(null);
+      setEducationInput("");
+    } else {
+      setEditAddressIndex(null);
+      setAddressInput("");
+    }
+  };
+
   if (!user) return <p>Cargando...</p>;
 
   return (
     <div className="user-section">
-      <h3>Mi Perfil</h3>
+      <h3>MI PERFIL</h3>
       <p>
         <strong>Nombre:</strong> {user.name}
       </p>
@@ -214,7 +224,7 @@ const UserSection = () => {
 
       <div className="related-data">
         <div className="section">
-          <h4>Estudios</h4>
+          <h4>ESTUDIOS</h4>
           <form className="education-form" onSubmit={handleSubmitEducation}>
             <input
               type="text"
@@ -229,25 +239,35 @@ const UserSection = () => {
           <ul>
             {educations.map((item, index) => (
               <li key={item.id}>
-                {item.title}
-                <button
-                  className="button-edit"
-                  onClick={() => handleEditItem(index, "education")}
-                >
-                  <FaEdit />
-                </button>
-                <button
-                  className="button-delete"
-                  onClick={() => handleDeleteItem(index, "education")}
-                >
-                  <MdDelete />
-                </button>
+                <span>{item.title}</span>
+                <div className="actions">
+                {editEducationIndex === index && (
+                    <button
+                      className="button-cancel"
+                      onClick={() => handleCancelEdit("education")}
+                    >
+                      <MdCancel />
+                    </button>
+                  )}
+                  <button
+                    className="button-edit"
+                    onClick={() => handleEditItem(index, "education")}
+                  >
+                    <FaEdit />
+                  </button>
+                  <button
+                    className="button-delete"
+                    onClick={() => handleDeleteItem(index, "education")}
+                  >
+                    <MdDelete />
+                  </button>
+                </div>
               </li>
             ))}
           </ul>
         </div>
         <div className="section">
-          <h4>Direcciones</h4>
+          <h4>DIRECCIONES</h4>
           <form className="address-form" onSubmit={handleSubmitAddress}>
             <input
               type="text"
@@ -262,19 +282,29 @@ const UserSection = () => {
           <ul>
             {addresses.map((item, index) => (
               <li key={item.id}>
-                {item.address}
-                <button
-                  className="button-edit"
-                  onClick={() => handleEditItem(index, "address")}
-                >
-                  <FaEdit />
-                </button>
-                <button
-                  className="button-delete"
-                  onClick={() => handleDeleteItem(index, "address")}
-                >
-                  <MdDelete />
-                </button>
+                <span>{item.address}</span>
+                <div className="actions">
+                {editAddressIndex === index && (
+                    <button
+                      className="button-cancel"
+                      onClick={() => handleCancelEdit("address")}
+                    >
+                      <MdCancel />
+                    </button>
+                  )}
+                  <button
+                    className="button-edit"
+                    onClick={() => handleEditItem(index, "address")}
+                  >
+                    <FaEdit />
+                  </button>
+                  <button
+                    className="button-delete"
+                    onClick={() => handleDeleteItem(index, "address")}
+                  >
+                    <MdDelete />
+                  </button>
+                </div>
               </li>
             ))}
           </ul>

@@ -22,6 +22,7 @@
   width: 100%;
   max-width: 500px; // Máximo ancho para desktop
   max-height: 90vh;
+  min-height: 200px;
   overflow-y: auto;
   position: relative;
   animation: modalFadeIn 0.3s ease-out;
@@ -40,11 +41,11 @@
 @keyframes modalFadeIn {
   from {
     opacity: 0;
-    transform: translateY(-20px);
+    transform: translateY(-20px) scale(0.95);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 
@@ -107,6 +108,11 @@
   }
 }
 
+input::placeholder {
+  color: #aaa;
+  font-style: italic;
+}
+
 // Secciones de múltiples inputs
 .multi-input-section {
   margin-bottom: 1.5rem;
@@ -123,7 +129,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem
 
   input {
     flex: 1;

@@ -29,19 +29,6 @@ p {
   line-height: 1.5;
 }
 
-// Botones
-.button-edit {
-  @include button-style($blue-edit);
-}
-
-.button-delete {
-  @include button-style($red-delete);
-}
-
-.button-confirm {
-  @include button-style($green-confirm);
-}
-
 // Inputs y formularios
 input, select, textarea {
   padding: $form-input-padding;
@@ -59,7 +46,7 @@ input, select, textarea {
 
 // Footer y MenuNav estilos básicos
 footer {
-  background-color: $lime-green;
+  background-color: $primary;
   color: $black;
   padding: 1rem;
   text-align: center;

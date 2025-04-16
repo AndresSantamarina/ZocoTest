@@ -319,10 +319,12 @@ const AdminSection = () => {
 
   return (
     <div className="admin-section">
-      <h3>Gestión de Usuarios</h3>
-      <button onClick={handleOpenCreate} className="button-confirm">
-        <HiUserAdd /> Nuevo usuario
-      </button>
+      <div className="admin-header">
+        <h3>Gestión de Usuarios</h3>
+        <button onClick={handleOpenCreate} className="button-create-user">
+          <HiUserAdd />
+        </button>
+      </div>
       <UserModal
         show={showModal}
         onClose={() => {
@@ -390,18 +392,20 @@ const AdminSection = () => {
                   <td>{getUserEducations(user.id)}</td>
                   <td>{getUserAddresses(user.id)}</td>
                   <td>
-                    <button
-                      className="button-edit"
-                      onClick={() => handleOpenEdit(user)}
-                    >
-                      <FaEdit />
-                    </button>
-                    <button
-                      className="button-delete"
-                      onClick={() => handleDeleteUser(user.id)}
-                    >
-                      <MdDelete />
-                    </button>
+                    <div className="actions">
+                      <button
+                        className="button-edit"
+                        onClick={() => handleOpenEdit(user)}
+                      >
+                        <FaEdit />
+                      </button>
+                      <button
+                        className="button-delete"
+                        onClick={() => handleDeleteUser(user.id)}
+                      >
+                        <MdDelete />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

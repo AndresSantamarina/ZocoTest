@@ -11,13 +11,14 @@
 
   &__left {
     font-weight: bold;
-    font-size: 1.2rem;
+    font-size: 1.7rem;
     cursor: pointer;
   }
 
   &__right {
     button {
       margin-left: 1rem;
+      font-size: 1.5rem;
     }
   }
 }

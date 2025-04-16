@@ -2,12 +2,21 @@
 @import "../../assets/styles/mixins";
 
 .login-container {
-  max-width: 400px;
-  margin: 3rem auto;
-  padding: 2rem;
+  max-width: 420px;
+  margin: 4rem auto;
+  padding: 2.5rem 2rem;
   background-color: $white;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  @include box-shadow();
+  font-family: $font-base;
+
+  h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    font-family: $font-title;
+    font-size: 1.6rem;
+    color: $primary;
+  }
 }
 
 .login-form {
@@ -15,15 +24,38 @@
   flex-direction: column;
 
   label {
-    margin-bottom: 0.25rem;
-    font-weight: bold;
+    margin-bottom: 0.3rem;
+    font-weight: 600;
+    color: $dark-gray;
   }
 
   input {
-    margin-bottom: 1rem;
+    padding: 0.6rem 0.8rem;
+    border: 1px solid $light-gray;
+    border-radius: 6px;
+    margin-bottom: 1.2rem;
+    font-size: 1rem;
+    @include transition();
+
+    &:focus {
+      outline: none;
+      border-color: $primary;
+      box-shadow: 0 0 0 2px rgba($primary, 0.15);
+    }
   }
 
   button {
-    width: 100%;
+    @include button-style($green-confirm, $white);
+    font-weight: bold;
+    font-size: 1rem;
+    padding: 0.75rem;
+    border-radius: 8px;
+    @include transition();
+    @include box-shadow();
+
+    &:disabled {
+      background-color: lighten($green-confirm, 20%);
+      cursor: not-allowed;
+    }
   }
 }

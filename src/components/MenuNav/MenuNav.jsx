@@ -52,7 +52,7 @@ const MenuNav = () => {
             <BiLogOut />
           </button>
         ) : (
-          <button className="button-edit" onClick={() => navigate("/login")}>
+          <button className="button-login" onClick={() => navigate("/login")}>
             <BiLogIn />
           </button>
         )}
