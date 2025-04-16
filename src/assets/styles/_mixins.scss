@@ -3,7 +3,6 @@
   align-items: center;
   justify-content: center;
 }
-
 @mixin button-style($bg, $color: $white) {
   background-color: $bg;
   color: $color;
@@ -17,13 +16,9 @@
     filter: brightness(90%);
   }
 }
-
-// Sombras
 @mixin box-shadow($color: rgba(0, 0, 0, 0.1)) {
   box-shadow: 0 4px 6px $color;
 }
-
-// Transiciones suaves
 @mixin transition($prop: all, $duration: 0.3s, $ease: ease-in-out) {
   transition: $prop $duration $ease;
 }

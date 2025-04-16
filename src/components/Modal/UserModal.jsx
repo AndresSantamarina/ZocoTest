@@ -12,7 +12,6 @@ import {
   createAddress,
   updateAddress,
   deleteAddress,
-  fetchUsers,
 } from "../../helpers/apiHelpers.js";
 
 const UserModal = ({ show, onClose, title, onSubmit, initialData = {} }) => {
@@ -62,7 +61,6 @@ const UserModal = ({ show, onClose, title, onSubmit, initialData = {} }) => {
     if (initialData?.id) {
       fetchRelatedData();
     } else {
-      // asegurarse de que no falte ninguna propiedad
       setFormData({
         name: "",
         email: "",
@@ -157,7 +155,6 @@ const UserModal = ({ show, onClose, title, onSubmit, initialData = {} }) => {
       let result;
 
       if (formData.id) {
-        // Editar usuario existente
         await updateUser(formData.id, {
           name: formData.name,
           email: formData.email,
@@ -165,21 +162,17 @@ const UserModal = ({ show, onClose, title, onSubmit, initialData = {} }) => {
           role: formData.role,
         });
 
-        // 2. Obtener estudios y direcciones existentes en la base de datos
         const [existingEducations, existingAddresses] = await Promise.all([
           axios.get(`http://localhost:3001/educations?userId=${formData.id}`),
           axios.get(`http://localhost:3001/addresses?userId=${formData.id}`),
         ]);
 
-        // 3. Manejar estudios - SOLUCIÓN MEJORADA
         await Promise.all(
           formData.educations.map(async (edu) => {
             const educationData = {
               title: edu.title,
               userId: formData.id,
             };
-
-            // Si el estudio no tiene ID o no existe en la base de datos, crear uno nuevo
             if (
               !edu.id ||
               !existingEducations.data.some((e) => e.id === edu.id)
@@ -191,7 +184,6 @@ const UserModal = ({ show, onClose, title, onSubmit, initialData = {} }) => {
           })
         );
 
-        // 4. Eliminar estudios que ya no están en el formulario
         const educationsToKeep = formData.educations
           .map((edu) => edu.id)
           .filter(Boolean);
@@ -201,7 +193,6 @@ const UserModal = ({ show, onClose, title, onSubmit, initialData = {} }) => {
             .map((edu) => deleteEducation(edu.id))
         );
 
-        // 5. Manejar direcciones - Misma lógica que estudios
         await Promise.all(
           formData.addresses.map(async (addr) => {
             const addressData = {
@@ -220,7 +211,6 @@ const UserModal = ({ show, onClose, title, onSubmit, initialData = {} }) => {
           })
         );
 
-        // 6. Eliminar direcciones que ya no están en el formulario
         const addressesToKeep = formData.addresses
           .map((addr) => addr.id)
           .filter(Boolean);
@@ -232,7 +222,6 @@ const UserModal = ({ show, onClose, title, onSubmit, initialData = {} }) => {
 
         result = { action: "updated", user: formData };
       } else {
-        // Crear nuevo usuario
         const userRes = await createUser({
           name: formData.name,
           email: formData.email,
@@ -242,24 +231,22 @@ const UserModal = ({ show, onClose, title, onSubmit, initialData = {} }) => {
 
         const newUserId = userRes.data.id;
 
-        // Crear estudios solo si hay estudios para crear
         if (formData.educations && formData.educations.length > 0) {
           await Promise.all(
             formData.educations.map((edu) =>
               createEducation({
                 title: edu.title,
-                userId: newUserId, // Usar el ID del nuevo usuario
+                userId: newUserId,
               })
             )
           );
         }
-        // Crear direcciones solo si hay direcciones para crear
         if (formData.addresses && formData.addresses.length > 0) {
           await Promise.all(
             formData.addresses.map((addr) =>
               createAddress({
                 address: addr.address,
-                userId: newUserId, // Usar el ID del nuevo usuario
+                userId: newUserId,
               })
             )
           );
@@ -269,7 +256,7 @@ const UserModal = ({ show, onClose, title, onSubmit, initialData = {} }) => {
       }
 
       Swal.fire("Éxito", "Usuario guardado correctamente", "success");
-      onSubmit(result); // Notificar al padre con el resultado
+      onSubmit(result);
       onClose();
     } catch (error) {
       console.error("Error saving user:", error);
@@ -294,7 +281,6 @@ const UserModal = ({ show, onClose, title, onSubmit, initialData = {} }) => {
           <div className="loading-indicator">Cargando datos...</div>
         ) : (
           <form onSubmit={handleSubmit} className="modal-form">
-            {/* Campos básicos del usuario */}
             <label>
               Nombre:
               <input

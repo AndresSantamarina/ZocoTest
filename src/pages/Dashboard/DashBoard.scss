@@ -34,11 +34,11 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 1.5rem;
-  
+
       h3 {
         margin: 0;
       }
-  
+
       .button-create-user {
         background-color: $green-confirm;
         color: $white;
@@ -51,11 +51,11 @@
         align-items: center;
         justify-content: center;
         transition: background 0.3s;
-  
+
         svg {
           font-size: 1.5rem;
         }
-  
+
         &:hover {
           background-color: darken($green-confirm, 10%);
         }
@@ -65,21 +65,21 @@
       h4 {
         margin-bottom: 1rem;
       }
-  
+
       .actions {
         display: flex;
         gap: 0.5rem;
-  
+
         button {
           background-color: transparent;
           border: none;
           font-size: 1.3rem;
           cursor: pointer;
-  
+
           &.button-edit {
             color: $blue-edit;
           }
-  
+
           &.button-delete {
             color: $red-delete;
           }
@@ -120,7 +120,6 @@
     }
   }
 
-  
   .related-data {
     margin-top: 2rem;
 
@@ -142,16 +141,16 @@
         align-items: center;
         gap: 0.5rem;
         margin-bottom: 1rem;
-      
+
         input {
           flex: 1;
           padding: 0.5rem;
-          height: 42px; // 👈 Asegura altura consistente
+          height: 42px;
           border: 1px solid $dark-gray;
           border-radius: 6px;
           font-size: 1rem;
         }
-      
+
         button {
           padding: 4px;
           margin-bottom: 15px;
@@ -165,11 +164,11 @@
           align-items: center;
           justify-content: center;
           transition: background 0.3s;
-      
+
           svg {
             font-size: 1.4rem;
           }
-      
+
           &:hover {
             background-color: darken($green-confirm, 10%);
           }
@@ -181,7 +180,7 @@
         padding-left: 0;
         max-height: 200px;
         overflow-y: auto;
-      
+
         li {
           display: flex;
           justify-content: space-between;
@@ -190,31 +189,31 @@
           padding: 0.4rem 0.6rem;
           border-radius: 6px;
           margin-bottom: 0.5rem;
-      
+
           span {
             flex: 1;
             font-size: 1rem;
             color: $dark-gray;
           }
-      
+
           .actions {
             display: flex;
             gap: 0.4rem;
-      
+
             button {
               background-color: transparent;
               border: none;
               font-size: 1.3rem;
               cursor: pointer;
-      
+
               &.button-edit {
                 color: $green-confirm;
               }
-      
+
               &.button-delete {
                 color: $red-delete;
               }
-      
+
               &.button-cancel {
                 color: $dark-gray;
               }

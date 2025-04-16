@@ -49,7 +49,6 @@ const UserSection = () => {
 
     try {
       if (editEducationIndex !== null) {
-        // Editar estudio existente
         const educationToUpdate = educations[editEducationIndex];
         const updatedEducation = {
           ...educationToUpdate,
@@ -67,7 +66,6 @@ const UserSection = () => {
         setEditEducationIndex(null);
         Swal.fire("Editado", "El estudio fue editado exitosamente.", "success");
       } else {
-        // Crear nuevo estudio
         const newEducation = {
           id: Date.now().toString(),
           userId: user.id,
@@ -99,7 +97,6 @@ const UserSection = () => {
 
     try {
       if (editAddressIndex !== null) {
-        // Editar dirección existente
         const addressToUpdate = addresses[editAddressIndex];
         const updatedAddress = {
           ...addressToUpdate,
@@ -121,7 +118,6 @@ const UserSection = () => {
           "success"
         );
       } else {
-        // Crear nueva dirección
         const newAddress = {
           id: Date.now().toString(),
           userId: user.id,
@@ -162,6 +158,8 @@ const UserSection = () => {
       text: "Esta acción no se puede deshacer",
       icon: "warning",
       showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
       confirmButtonText: "Sí, eliminar",
       cancelButtonText: "Cancelar",
     }).then(async (result) => {
@@ -241,7 +239,7 @@ const UserSection = () => {
               <li key={item.id}>
                 <span>{item.title}</span>
                 <div className="actions">
-                {editEducationIndex === index && (
+                  {editEducationIndex === index && (
                     <button
                       className="button-cancel"
                       onClick={() => handleCancelEdit("education")}
@@ -284,7 +282,7 @@ const UserSection = () => {
               <li key={item.id}>
                 <span>{item.address}</span>
                 <div className="actions">
-                {editAddressIndex === index && (
+                  {editAddressIndex === index && (
                     <button
                       className="button-cancel"
                       onClick={() => handleCancelEdit("address")}

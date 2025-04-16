@@ -71,15 +71,12 @@ const AdminSection = () => {
       } = data;
 
       if (userData.id) {
-        // 1. Actualizar datos básicos del usuario
         await axios.put(`http://localhost:3001/users/${userData.id}`, userData);
 
-        // 2. Manejar estudios - SOLUCIÓN PARA USUARIOS SIN ESTUDIOS PREVIOS
         const existingEducations = await axios.get(
           `http://localhost:3001/educations?userId=${userData.id}`
         );
 
-        // Para cada estudio en el formulario
         await Promise.all(
           formEducations.map(async (edu) => {
             const educationData = {
@@ -88,7 +85,6 @@ const AdminSection = () => {
             };
 
             if (edu.id) {
-              // Verificar si el estudio existe antes de actualizar
               try {
                 await axios.get(`http://localhost:3001/educations/${edu.id}`);
                 return axios.put(
@@ -96,14 +92,12 @@ const AdminSection = () => {
                   educationData
                 );
               } catch (error) {
-                // Si no existe, crear uno nuevo
                 return axios.post("http://localhost:3001/educations", {
                   ...educationData,
                   id: Date.now().toString(),
                 });
               }
             } else {
-              // Crear nuevo estudio
               return axios.post("http://localhost:3001/educations", {
                 ...educationData,
                 id: Date.now().toString(),
@@ -112,7 +106,6 @@ const AdminSection = () => {
           })
         );
 
-        // Eliminar estudios existentes que no están en el formulario
         const educationsToKeep = formEducations.map((edu) => edu.id);
         await Promise.all(
           existingEducations.data
@@ -122,7 +115,6 @@ const AdminSection = () => {
             )
         );
 
-        // 3. Manejar direcciones (misma lógica que estudios)
         const existingAddresses = await axios.get(
           `http://localhost:3001/addresses?userId=${userData.id}`
         );
@@ -144,7 +136,7 @@ const AdminSection = () => {
               } catch {
                 return axios.post("http://localhost:3001/addresses", {
                   ...addressData,
-                  id: Date.now().toString() + 1, // ID diferente a estudios
+                  id: Date.now().toString() + 1,
                 });
               }
             } else {
@@ -156,7 +148,6 @@ const AdminSection = () => {
           })
         );
 
-        // Eliminar direcciones existentes que no están en el formulario
         const addressesToKeep = formAddresses.map((addr) => addr.id);
         await Promise.all(
           existingAddresses.data
@@ -168,14 +159,12 @@ const AdminSection = () => {
 
         Swal.fire("Éxito", "Usuario actualizado correctamente", "success");
       } else {
-        // Crear nuevo usuario
         const newUser = { ...userData, id: Date.now().toString() };
         const userResponse = await axios.post(
           "http://localhost:3001/users",
           newUser
         );
 
-        // Crear estudios
         await Promise.all(
           formEducations.map((edu) =>
             axios.post("http://localhost:3001/educations", {
@@ -188,7 +177,6 @@ const AdminSection = () => {
           )
         );
 
-        // Crear direcciones
         await Promise.all(
           formAddresses.map((addr) =>
             axios.post("http://localhost:3001/addresses", {
@@ -204,7 +192,6 @@ const AdminSection = () => {
         Swal.fire("Éxito", "Usuario creado correctamente", "success");
       }
 
-      // Refrescar datos
       const [usersRes, educationsRes, addressesRes] = await Promise.all([
         axios.get("http://localhost:3001/users"),
         axios.get("http://localhost:3001/educations"),
@@ -238,12 +225,13 @@ const AdminSection = () => {
       text: "Esta acción eliminará al usuario y todos sus datos relacionados.",
       icon: "warning",
       showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
       confirmButtonText: "Sí, eliminar",
       cancelButtonText: "Cancelar",
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          // Eliminar primero las relaciones
           await Promise.all([
             ...educations
               .filter((edu) => edu.userId === id)
@@ -257,10 +245,8 @@ const AdminSection = () => {
               ),
           ]);
 
-          // Luego eliminar el usuario
           await axios.delete(`http://localhost:3001/users/${id}`);
 
-          // Actualizar todos los estados
           const [usersRes, educationsRes, addressesRes] = await Promise.all([
             axios.get("http://localhost:3001/users"),
             axios.get("http://localhost:3001/educations"),
@@ -333,7 +319,6 @@ const AdminSection = () => {
         }}
         title={modalTitle}
         onSubmit={(result) => {
-          // Refrescar datos después de cualquier acción
           const fetchData = async () => {
             try {
               const [usersRes, educationsRes, addressesRes] = await Promise.all(

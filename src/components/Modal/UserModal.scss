@@ -1,5 +1,3 @@
-// UserModal.scss - Diseño Mobile First Responsivo
-
 .modal-backdrop {
   position: fixed;
   top: 0;
@@ -9,7 +7,7 @@
   background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
-  align-items: flex-start; // Cambiado para mejor scroll en móviles
+  align-items: flex-start;
   padding: 1rem;
   z-index: 1000;
   overflow-y: auto;
@@ -20,7 +18,7 @@
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   width: 100%;
-  max-width: 500px; // Máximo ancho para desktop
+  max-width: 500px;
   max-height: 90vh;
   min-height: 200px;
   overflow-y: auto;
@@ -84,7 +82,6 @@
   gap: 1.25rem;
 }
 
-// Estilos para todos los inputs básicos
 .modal-form label {
   display: block;
   margin-bottom: 0.5rem;
@@ -92,7 +89,8 @@
   color: #555;
   font-weight: 500;
 
-  input, select {
+  input,
+  select {
     width: 100%;
     padding: 0.75rem;
     border: 1px solid #ddd;
@@ -113,7 +111,6 @@ input::placeholder {
   font-style: italic;
 }
 
-// Secciones de múltiples inputs
 .multi-input-section {
   margin-bottom: 1.5rem;
 
@@ -129,12 +126,10 @@ input::placeholder {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  margin-bottom: 0.75rem
-
-  input {
+  margin-bottom: 0.75rem input {
     flex: 1;
     padding: 0.65rem;
-    min-width: 0; // Fix para flexbox
+    min-width: 0;
   }
 
   button {
@@ -158,12 +153,11 @@ input::placeholder {
   }
 }
 
-// Botones del modal
 .modal-buttons {
   display: flex;
   gap: 1rem;
   margin-top: 1rem;
-  flex-wrap: wrap; // Para pantallas muy pequeñas
+  flex-wrap: wrap;
 
   button {
     flex: 1;
@@ -173,7 +167,7 @@ input::placeholder {
     border-radius: 6px;
     cursor: pointer;
     transition: all 0.2s;
-    min-width: 120px; // Ancho mínimo para botones
+    min-width: 120px;
 
     @media (max-width: 480px) {
       flex: 100%;
@@ -181,7 +175,6 @@ input::placeholder {
   }
 }
 
-// Loading indicator
 .loading-indicator {
   padding: 2rem;
   text-align: center;
@@ -189,9 +182,10 @@ input::placeholder {
   font-size: 1rem;
 }
 
-// Animación para el loading
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .loading-indicator::before {
@@ -207,7 +201,6 @@ input::placeholder {
   vertical-align: middle;
 }
 
-// Estilos específicos para pantallas pequeñas
 @media (max-width: 480px) {
   .modal {
     padding: 1.25rem;
@@ -220,24 +213,26 @@ input::placeholder {
 
   .modal-form label {
     font-size: 0.85rem;
-    
-    input, select {
+
+    input,
+    select {
       padding: 0.65rem;
       font-size: 0.9rem;
     }
   }
 
-  .multi-input-item, .add-new-item {
+  .multi-input-item,
+  .add-new-item {
     flex-direction: column;
     gap: 0.5rem;
 
-    input, button {
+    input,
+    button {
       width: 100%;
     }
   }
 }
 
-// Mejoras para tablets
 @media (min-width: 481px) and (max-width: 768px) {
   .modal {
     max-width: 90%;

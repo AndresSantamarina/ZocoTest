@@ -29,7 +29,7 @@ const MenuNav = () => {
       cancelButtonText: "Cancelar",
     }).then((result) => {
       if (result.isConfirmed) {
-        logout(); //  Usa la función del contexto
+        logout();
         Swal.fire({
           title: "Sesión cerrada",
           icon: "success",

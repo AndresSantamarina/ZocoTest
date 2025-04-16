@@ -1,7 +1,6 @@
-@import 'variables';
-@import 'mixins';
+@import "variables";
+@import "mixins";
 
-// Reset básico
 * {
   margin: 0;
   padding: 0;
@@ -18,8 +17,9 @@ body {
   color: $black;
 }
 
-// Estilos base para títulos y textos
-h1, h2, h3 {
+h1,
+h2,
+h3 {
   font-family: $font-title;
   margin-bottom: 0.5rem;
 }
@@ -29,8 +29,9 @@ p {
   line-height: 1.5;
 }
 
-// Inputs y formularios
-input, select, textarea {
+input,
+select,
+textarea {
   padding: $form-input-padding;
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -39,12 +40,10 @@ input, select, textarea {
   margin-bottom: 1rem;
 }
 
-// Layout generales
 .dashboard {
   padding: $dashboard-padding;
 }
 
-// Footer y MenuNav estilos básicos
 footer {
   background-color: $primary;
   color: $black;
@@ -56,12 +55,11 @@ footer {
   background-color: $black;
   color: $white;
   padding: 1rem;
-
   a {
     color: $white;
     text-decoration: none;
     margin-right: 1rem;
-
+    
     &:hover {
       text-decoration: underline;
     }

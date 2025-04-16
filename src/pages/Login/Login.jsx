@@ -26,7 +26,7 @@ const Login = () => {
       }
 
       const userData = res.data[0];
-      const fakeToken = Math.random().toString(36).substring(2); // simula un JWT
+      const fakeToken = Math.random().toString(36).substring(2);
 
       login(userData, fakeToken);
 
