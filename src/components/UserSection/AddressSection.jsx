@@ -46,7 +46,13 @@ const AddressSection = ({
             </button>
             <button
               className="button-delete"
-              onClick={() => deleteItem(index, "address")}
+              onClick={() => {
+                deleteItem(index, "address").then((result) => {
+                  if (result && editAddressIndex === index) {
+                    handleCancelEdit("address");
+                  }
+                });
+              }}
             >
               <MdDelete />
             </button>

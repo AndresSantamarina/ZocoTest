@@ -1,3 +1,5 @@
+@import "../../assets/styles/variables";
+
 .modal-backdrop {
   position: fixed;
   top: 0;
@@ -100,7 +102,7 @@
 
     &:focus {
       outline: none;
-      border-color: #4d90fe;
+      border-color: $blue-edit;
       box-shadow: 0 0 0 2px rgba(77, 144, 254, 0.2);
     }
   }
@@ -201,6 +203,10 @@ input::placeholder {
   font-size: 1rem;
 }
 
+.error-message {
+  color: $red-delete;
+}
+
 @keyframes spin {
   to {
     transform: rotate(360deg);
@@ -214,7 +220,7 @@ input::placeholder {
   height: 1.5rem;
   border: 3px solid rgba(0, 0, 0, 0.1);
   border-radius: 50%;
-  border-top-color: #4d90fe;
+  border-top-color: $blue-edit;
   animation: spin 1s ease-in-out infinite;
   margin-right: 0.75rem;
   vertical-align: middle;

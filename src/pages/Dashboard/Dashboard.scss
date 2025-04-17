@@ -203,9 +203,12 @@
           padding: 0.4rem 0.6rem;
           border-radius: 6px;
           margin-bottom: 0.5rem;
+          flex-wrap: wrap;
 
           span {
             flex: 1;
+            min-width: 0;
+            word-break: break-word;
             font-size: 1rem;
             color: $dark-gray;
           }
@@ -213,6 +216,8 @@
           .actions {
             display: flex;
             gap: 0.4rem;
+            flex-shrink: 0;
+            flex-wrap: wrap;
 
             button {
               background-color: transparent;

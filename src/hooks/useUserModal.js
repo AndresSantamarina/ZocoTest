@@ -288,6 +288,17 @@ const useUserModal = ({ initialData, onSubmit, onClose }) => {
                 }
 
                 result = { action: "created", userId: newUserId };
+
+                reset({
+                    name: "",
+                    email: "",
+                    password: "",
+                    role: "user",
+                    educations: [],
+                    addresses: [],
+                });
+                setNewEducation("");
+                setNewAddress("");
             }
 
             Swal.fire("Éxito", "Usuario guardado correctamente", "success");

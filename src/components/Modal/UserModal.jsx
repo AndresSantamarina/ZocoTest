@@ -2,6 +2,7 @@ import "./UserModal.scss";
 import { IoClose } from "react-icons/io5";
 import UserForm from "./UserForm";
 import useUserModal from "../../hooks/useUserModal";
+import { useEffect } from "react";
 
 const UserModal = ({ show, onClose, title, onSubmit, initialData = {} }) => {
   const {
@@ -23,6 +24,19 @@ const UserModal = ({ show, onClose, title, onSubmit, initialData = {} }) => {
     setNewAddress,
   } = useUserModal({ initialData, onSubmit, onClose });
 
+  const handleClose = () => {
+    setNewEducation("");
+    setNewAddress("");
+    onClose();
+  };
+
+  useEffect(() => {
+    if (show) {
+      setNewEducation("");
+      setNewAddress("");
+    }
+  }, [show, setNewEducation, setNewAddress]);
+
   if (!show) return null;
 
   return (
@@ -30,7 +44,7 @@ const UserModal = ({ show, onClose, title, onSubmit, initialData = {} }) => {
       <div className="modal">
         <div className="modal-header">
           <h3>{title}</h3>
-          <button className="close-button" onClick={onClose}>
+          <button className="close-button" onClick={handleClose}>
             <IoClose />
           </button>
         </div>
@@ -53,7 +67,7 @@ const UserModal = ({ show, onClose, title, onSubmit, initialData = {} }) => {
             onFormSubmit={onFormSubmit}
             setNewEducation={setNewEducation}
             setNewAddress={setNewAddress}
-            onClose={onClose}
+            onClose={handleClose}
           />
         )}
       </div>

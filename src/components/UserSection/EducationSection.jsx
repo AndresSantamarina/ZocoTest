@@ -46,7 +46,13 @@ const EducationSection = ({
             </button>
             <button
               className="button-delete"
-              onClick={() => deleteItem(index, "education")}
+              onClick={() => {
+                deleteItem(index, "education").then((result) => {
+                  if (result && editEducationIndex === index) {
+                    handleCancelEdit("education");
+                  }
+                });
+              }}
             >
               <MdDelete />
             </button>
