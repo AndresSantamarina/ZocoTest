@@ -1,6 +1,6 @@
 import "./Dashboard.scss";
 import { useContext } from "react";
-import UserSection from "./UserSection";
+import UserSection from "../../components/UserSection/UserSection";
 import { AuthContext } from "../../context/AuthContext";
 import AdminSection from "../../components/AdminSection/AdminSection";
 
