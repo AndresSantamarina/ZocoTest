@@ -1,4 +1,4 @@
-import "./Dashboard.scss"
+import "./Dash.scss"
 import { useContext } from "react";
 import UserSection from "../../components/UserSection/UserSection";
 import { AuthContext } from "../../context/AuthContext";
