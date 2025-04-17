@@ -1,0 +1,28 @@
+@import "../../assets/styles/variables";
+
+.not-found {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  text-align: center;
+  padding: 2rem;
+
+  h1 {
+    font-size: 6rem;
+    color: $red-delete;
+    margin-bottom: 1rem;
+  }
+
+  p {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  a {
+    color: $blue-edit;
+    text-decoration: underline;
+    font-size: 1.2rem;
+  }
+}
