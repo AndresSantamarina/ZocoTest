@@ -9,7 +9,7 @@ import { AuthContext } from "../../context/AuthContext";
 
 const AdminSection = () => {
   const [showModal, setShowModal] = useState(false);
-  const [modalTitle, setModalTitle] = useState("Crear Usuario");
+  const [modalTitle, setModalTitle] = useState("CREAR USUARIO");
   const [selectedUser, setSelectedUser] = useState(null);
   const [users, setUsers] = useState([]);
   const [educations, setEducations] = useState([]);
@@ -52,13 +52,13 @@ const AdminSection = () => {
 
   const handleOpenCreate = () => {
     setSelectedUser(null);
-    setModalTitle("Crear Usuario");
+    setModalTitle("CREAR USUARIO");
     setShowModal(true);
   };
 
   const handleOpenEdit = (user) => {
     setSelectedUser(user);
-    setModalTitle("Editar Usuario");
+    setModalTitle("EDITAR USUARIO");
     setShowModal(true);
   };
 

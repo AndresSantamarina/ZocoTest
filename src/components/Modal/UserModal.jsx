@@ -13,26 +13,42 @@ import {
   updateAddress,
   deleteAddress,
 } from "../../helpers/apiHelpers.js";
+import {
+  userValidations,
+  validateAddress,
+  validateEducation,
+} from "../../validations/validations.js";
+import { useForm } from "react-hook-form";
 
 const UserModal = ({ show, onClose, title, onSubmit, initialData = {} }) => {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    role: "user",
-    educations: [],
-    addresses: [],
+  const {
+    register,
+    handleSubmit: hookFormSubmit,
+    formState: { errors },
+    reset,
+    setValue,
+    watch,
+  } = useForm({
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+      role: "user",
+      educations: [],
+      addresses: [],
+    },
   });
 
   const [newEducation, setNewEducation] = useState("");
   const [newAddress, setNewAddress] = useState("");
   const [loading, setLoading] = useState(false);
+  const formData = watch();
 
   useEffect(() => {
     const fetchRelatedData = async () => {
       if (!initialData?.id) return;
-
       setLoading(true);
+
       try {
         const [educationsRes, addressesRes] = await Promise.all([
           axios.get(
@@ -40,8 +56,7 @@ const UserModal = ({ show, onClose, title, onSubmit, initialData = {} }) => {
           ),
           axios.get(`http://localhost:3001/addresses?userId=${initialData.id}`),
         ]);
-
-        setFormData({
+        reset({
           ...initialData,
           educations: educationsRes.data,
           addresses: addressesRes.data,
@@ -61,7 +76,7 @@ const UserModal = ({ show, onClose, title, onSubmit, initialData = {} }) => {
     if (initialData?.id) {
       fetchRelatedData();
     } else {
-      setFormData({
+      reset({
         name: "",
         email: "",
         password: "",
@@ -70,21 +85,24 @@ const UserModal = ({ show, onClose, title, onSubmit, initialData = {} }) => {
         addresses: [],
       });
     }
-  }, [initialData]);
+  }, [initialData, reset]);
 
   const handleAddEducation = () => {
     if (newEducation.trim()) {
-      setFormData((prev) => ({
-        ...prev,
-        educations: [
-          ...prev.educations,
-          {
-            title: newEducation,
-            id: Date.now().toString(),
-            userId: prev.id || null,
-          },
-        ],
-      }));
+      const error = validateEducation(newEducation);
+      if (error) {
+        Swal.fire("Error", error, "error");
+        return;
+      }
+
+      setValue("educations", [
+        ...formData.educations,
+        {
+          title: newEducation,
+          id: Date.now().toString(),
+          userId: formData.id || null,
+        },
+      ]);
       setNewEducation("");
     }
   };
@@ -93,14 +111,13 @@ const UserModal = ({ show, onClose, title, onSubmit, initialData = {} }) => {
     const educationToRemove = formData.educations[index];
 
     try {
-      if (educationToRemove.id) {
+      if (educationToRemove.id && typeof educationToRemove.id === "number") {
         await deleteEducation(educationToRemove.id);
       }
-
-      setFormData((prev) => ({
-        ...prev,
-        educations: prev.educations.filter((_, i) => i !== index),
-      }));
+      setValue(
+        "educations",
+        formData.educations.filter((_, i) => i !== index)
+      );
     } catch (error) {
       console.error("Error deleting education:", error);
       Swal.fire("Error", "No se pudo eliminar el estudio", "error");
@@ -109,17 +126,20 @@ const UserModal = ({ show, onClose, title, onSubmit, initialData = {} }) => {
 
   const handleAddAddress = () => {
     if (newAddress.trim()) {
-      setFormData((prev) => ({
-        ...prev,
-        addresses: [
-          ...prev.addresses,
-          {
-            address: newAddress,
-            id: Date.now().toString(),
-            userId: prev.id || null,
-          },
-        ],
-      }));
+      const error = validateAddress(newAddress);
+      if (error) {
+        Swal.fire("Error", error, "error");
+        return;
+      }
+
+      setValue("addresses", [
+        ...formData.addresses,
+        {
+          address: newAddress,
+          id: Date.now().toString(),
+          userId: formData.id || null,
+        },
+      ]);
       setNewAddress("");
     }
   };
@@ -128,50 +148,79 @@ const UserModal = ({ show, onClose, title, onSubmit, initialData = {} }) => {
     const addressToRemove = formData.addresses[index];
 
     try {
-      if (addressToRemove.id) {
+      if (addressToRemove.id && typeof addressToRemove.id === "number") {
         await deleteAddress(addressToRemove.id);
       }
 
-      setFormData((prev) => ({
-        ...prev,
-        addresses: prev.addresses.filter((_, i) => i !== index),
-      }));
+      setValue(
+        "addresses",
+        formData.addresses.filter((_, i) => i !== index)
+      );
     } catch (error) {
       console.error("Error deleting address:", error);
       Swal.fire("Error", "No se pudo eliminar la dirección", "error");
     }
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+  const handleEducationChange = (index, value) => {
+    const updated = [...formData.educations];
+    updated[index].title = value;
+    setValue("educations", updated);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleAddressChange = (index, value) => {
+    const updated = [...formData.addresses];
+    updated[index].address = value;
+    setValue("addresses", updated);
+  };
+
+  const validateFormData = (data) => {
+    for (const edu of data.educations) {
+      const error = validateEducation(edu.title);
+      if (error) {
+        Swal.fire("Error", `Estudio no válido: ${error}`, "error");
+        return false;
+      }
+    }
+
+    for (const addr of data.addresses) {
+      const error = validateAddress(addr.address);
+      if (error) {
+        Swal.fire("Error", `Dirección no válida: ${error}`, "error");
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+  const onFormSubmit = async (data) => {
+    if (!validateFormData(data)) {
+      return;
+    }
     setLoading(true);
 
     try {
       let result;
 
-      if (formData.id) {
-        await updateUser(formData.id, {
-          name: formData.name,
-          email: formData.email,
-          password: formData.password,
-          role: formData.role,
+      if (data.id) {
+        await updateUser(data.id, {
+          name: data.name,
+          email: data.email,
+          password: data.password,
+          role: data.role,
         });
 
         const [existingEducations, existingAddresses] = await Promise.all([
-          axios.get(`http://localhost:3001/educations?userId=${formData.id}`),
-          axios.get(`http://localhost:3001/addresses?userId=${formData.id}`),
+          axios.get(`http://localhost:3001/educations?userId=${data.id}`),
+          axios.get(`http://localhost:3001/addresses?userId=${data.id}`),
         ]);
 
         await Promise.all(
-          formData.educations.map(async (edu) => {
+          data.educations.map(async (edu) => {
             const educationData = {
               title: edu.title,
-              userId: formData.id,
+              userId: data.id,
             };
             if (
               !edu.id ||
@@ -184,7 +233,7 @@ const UserModal = ({ show, onClose, title, onSubmit, initialData = {} }) => {
           })
         );
 
-        const educationsToKeep = formData.educations
+        const educationsToKeep = data.educations
           .map((edu) => edu.id)
           .filter(Boolean);
         await Promise.all(
@@ -194,10 +243,10 @@ const UserModal = ({ show, onClose, title, onSubmit, initialData = {} }) => {
         );
 
         await Promise.all(
-          formData.addresses.map(async (addr) => {
+          data.addresses.map(async (addr) => {
             const addressData = {
               address: addr.address,
-              userId: formData.id,
+              userId: data.id,
             };
 
             if (
@@ -211,7 +260,7 @@ const UserModal = ({ show, onClose, title, onSubmit, initialData = {} }) => {
           })
         );
 
-        const addressesToKeep = formData.addresses
+        const addressesToKeep = data.addresses
           .map((addr) => addr.id)
           .filter(Boolean);
         await Promise.all(
@@ -220,20 +269,20 @@ const UserModal = ({ show, onClose, title, onSubmit, initialData = {} }) => {
             .map((addr) => deleteAddress(addr.id))
         );
 
-        result = { action: "updated", user: formData };
+        result = { action: "updated", user: data };
       } else {
         const userRes = await createUser({
-          name: formData.name,
-          email: formData.email,
-          password: formData.password,
-          role: formData.role,
+          name: data.name,
+          email: data.email,
+          password: data.password,
+          role: data.role,
         });
 
         const newUserId = userRes.data.id;
 
-        if (formData.educations && formData.educations.length > 0) {
+        if (data.educations && data.educations.length > 0) {
           await Promise.all(
-            formData.educations.map((edu) =>
+            data.educations.map((edu) =>
               createEducation({
                 title: edu.title,
                 userId: newUserId,
@@ -241,9 +290,9 @@ const UserModal = ({ show, onClose, title, onSubmit, initialData = {} }) => {
             )
           );
         }
-        if (formData.addresses && formData.addresses.length > 0) {
+        if (data.addresses && data.addresses.length > 0) {
           await Promise.all(
-            formData.addresses.map((addr) =>
+            data.addresses.map((addr) =>
               createAddress({
                 address: addr.address,
                 userId: newUserId,
@@ -280,36 +329,33 @@ const UserModal = ({ show, onClose, title, onSubmit, initialData = {} }) => {
         {loading ? (
           <div className="loading-indicator">Cargando datos...</div>
         ) : (
-          <form onSubmit={handleSubmit} className="modal-form">
+          <form onSubmit={hookFormSubmit(onFormSubmit)} className="modal-form">
             <label>
               Nombre:
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                required
-              />
+              <input type="text" {...register("name", userValidations.name)} />
+              {errors.name && (
+                <span className="error-message">{errors.name.message}</span>
+              )}
             </label>
             <label>
               Email:
               <input
                 type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                required
+                {...register("email", userValidations.email)}
               />
+              {errors.email && (
+                <span className="error-message">{errors.email.message}</span>
+              )}
             </label>
             <label>
               Password:
               <input
                 type="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                required
+                {...register("password", userValidations.password)}
               />
+              {errors.password && (
+                <span className="error-message">{errors.password.message}</span>
+              )}
             </label>
             <div className="multi-input-section">
               <label>Estudios:</label>
@@ -320,11 +366,9 @@ const UserModal = ({ show, onClose, title, onSubmit, initialData = {} }) => {
                     <input
                       type="text"
                       value={edu.title}
-                      onChange={(e) => {
-                        const updated = [...formData.educations];
-                        updated[index].title = e.target.value;
-                        setFormData({ ...formData, educations: updated });
-                      }}
+                      onChange={(e) =>
+                        handleEducationChange(index, e.target.value)
+                      }
                     />
                     <button
                       type="button"
@@ -361,11 +405,9 @@ const UserModal = ({ show, onClose, title, onSubmit, initialData = {} }) => {
                     <input
                       type="text"
                       value={addr.address}
-                      onChange={(e) => {
-                        const updated = [...formData.addresses];
-                        updated[index].address = e.target.value;
-                        setFormData({ ...formData, addresses: updated });
-                      }}
+                      onChange={(e) =>
+                        handleAddressChange(index, e.target.value)
+                      }
                     />
                     <button
                       type="button"

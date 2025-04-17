@@ -5,6 +5,10 @@ import Swal from "sweetalert2";
 import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { AuthContext } from "../../context/AuthContext";
+import {
+  validateAddress,
+  validateEducation,
+} from "../../validations/validations";
 
 const UserSection = () => {
   const { user } = useContext(AuthContext);
@@ -42,8 +46,9 @@ const UserSection = () => {
 
   const handleSubmitEducation = async (e) => {
     e.preventDefault();
-    if (educationInput.trim() === "") {
-      Swal.fire("Campo vacío", "Por favor ingresa un estudio.", "warning");
+    const error = validateEducation(educationInput);
+    if (error) {
+      Swal.fire("Error de validación", error, "warning");
       return;
     }
 
@@ -90,8 +95,9 @@ const UserSection = () => {
 
   const handleSubmitAddress = async (e) => {
     e.preventDefault();
-    if (addressInput.trim() === "") {
-      Swal.fire("Campo vacío", "Por favor completa el campo.", "warning");
+    const error = validateAddress(addressInput);
+    if (error) {
+      Swal.fire("Error de validación", error, "warning");
       return;
     }
 
@@ -220,92 +226,94 @@ const UserSection = () => {
         <strong>Email:</strong> {user.email}
       </p>
 
-      <div className="related-data">
-        <div className="section">
-          <h4>ESTUDIOS</h4>
-          <form className="education-form" onSubmit={handleSubmitEducation}>
-            <input
-              type="text"
-              placeholder="Agregar o editar estudio"
-              value={educationInput}
-              onChange={(e) => setEducationInput(e.target.value)}
-            />
-            <button className="button-confirm">
-              <IoIosAddCircle />
-            </button>
-          </form>
-          <ul>
-            {educations.map((item, index) => (
-              <li key={item.id}>
-                <span>{item.title}</span>
-                <div className="actions">
-                  {editEducationIndex === index && (
+      <div className="content-wrapper">
+        <div className="related-data">
+          <div className="section">
+            <h4>ESTUDIOS</h4>
+            <form className="education-form" onSubmit={handleSubmitEducation}>
+              <input
+                type="text"
+                placeholder="Agregar o editar estudio"
+                value={educationInput}
+                onChange={(e) => setEducationInput(e.target.value)}
+              />
+              <button className="button-confirm">
+                <IoIosAddCircle />
+              </button>
+            </form>
+            <ul>
+              {educations.map((item, index) => (
+                <li key={item.id}>
+                  <span>{item.title}</span>
+                  <div className="actions">
+                    {editEducationIndex === index && (
+                      <button
+                        className="button-cancel"
+                        onClick={() => handleCancelEdit("education")}
+                      >
+                        <MdCancel />
+                      </button>
+                    )}
                     <button
-                      className="button-cancel"
-                      onClick={() => handleCancelEdit("education")}
+                      className="button-edit"
+                      onClick={() => handleEditItem(index, "education")}
                     >
-                      <MdCancel />
+                      <FaEdit />
                     </button>
-                  )}
-                  <button
-                    className="button-edit"
-                    onClick={() => handleEditItem(index, "education")}
-                  >
-                    <FaEdit />
-                  </button>
-                  <button
-                    className="button-delete"
-                    onClick={() => handleDeleteItem(index, "education")}
-                  >
-                    <MdDelete />
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div className="section">
-          <h4>DIRECCIONES</h4>
-          <form className="address-form" onSubmit={handleSubmitAddress}>
-            <input
-              type="text"
-              placeholder="Agregar o editar dirección"
-              value={addressInput}
-              onChange={(e) => setAddressInput(e.target.value)}
-            />
-            <button className="button-confirm">
-              <IoIosAddCircle />
-            </button>
-          </form>
-          <ul>
-            {addresses.map((item, index) => (
-              <li key={item.id}>
-                <span>{item.address}</span>
-                <div className="actions">
-                  {editAddressIndex === index && (
                     <button
-                      className="button-cancel"
-                      onClick={() => handleCancelEdit("address")}
+                      className="button-delete"
+                      onClick={() => handleDeleteItem(index, "education")}
                     >
-                      <MdCancel />
+                      <MdDelete />
                     </button>
-                  )}
-                  <button
-                    className="button-edit"
-                    onClick={() => handleEditItem(index, "address")}
-                  >
-                    <FaEdit />
-                  </button>
-                  <button
-                    className="button-delete"
-                    onClick={() => handleDeleteItem(index, "address")}
-                  >
-                    <MdDelete />
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="section">
+            <h4>DIRECCIONES</h4>
+            <form className="address-form" onSubmit={handleSubmitAddress}>
+              <input
+                type="text"
+                placeholder="Agregar o editar dirección"
+                value={addressInput}
+                onChange={(e) => setAddressInput(e.target.value)}
+              />
+              <button className="button-confirm">
+                <IoIosAddCircle />
+              </button>
+            </form>
+            <ul>
+              {addresses.map((item, index) => (
+                <li key={item.id}>
+                  <span>{item.address}</span>
+                  <div className="actions">
+                    {editAddressIndex === index && (
+                      <button
+                        className="button-cancel"
+                        onClick={() => handleCancelEdit("address")}
+                      >
+                        <MdCancel />
+                      </button>
+                    )}
+                    <button
+                      className="button-edit"
+                      onClick={() => handleEditItem(index, "address")}
+                    >
+                      <FaEdit />
+                    </button>
+                    <button
+                      className="button-delete"
+                      onClick={() => handleDeleteItem(index, "address")}
+                    >
+                      <MdDelete />
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </div>
     </div>

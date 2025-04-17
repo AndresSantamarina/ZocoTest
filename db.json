@@ -17,9 +17,16 @@
     {
       "name": "Andrés",
       "email": "assantamarina@gmail.com",
-      "password": "123",
+      "password": "123456",
       "role": "user",
       "id": "1744738921183"
+    },
+    {
+      "name": "aaaaaa",
+      "email": "assantamarina@gmail.com",
+      "password": "aaaaaa",
+      "role": "user",
+      "id": "e3b3"
     }
   ],
   "educations": [
@@ -34,41 +41,21 @@
       "title": "Posgrado en UX"
     },
     {
-      "id": "b01b",
-      "title": "1",
-      "userId": "1744738921183"
+      "title": "123",
+      "userId": "1744738921183",
+      "id": "b01b"
     }
   ],
   "addresses": [
     {
       "id": "1",
-      "userId": 2,
+      "userId": "2",
       "address": "Calle Falsa 123"
     },
     {
-      "address": "Concepción",
+      "address": "Concepción 123",
       "userId": "1744738921183",
       "id": "1744738921247"
-    },
-    {
-      "address": "Programación",
-      "userId": "1744738921183",
-      "id": "1744768933789"
-    },
-    {
-      "address": "Programación",
-      "userId": "1744738921183",
-      "id": "1744768936799"
-    },
-    {
-      "address": "Programación",
-      "userId": "1744738921183",
-      "id": "1744768940532"
-    },
-    {
-      "address": "Programación",
-      "userId": "1744738921183",
-      "id": "1744768943512"
     }
   ]
 }

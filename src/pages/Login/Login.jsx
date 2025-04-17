@@ -4,21 +4,23 @@ import { AuthContext } from "../../context/AuthContext";
 import axios from "axios";
 import Swal from "sweetalert2";
 import "./Login.scss";
+import { useForm } from "react-hook-form";
+import { loginValidation } from "../../validations/validations";
 
 const Login = () => {
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm();
 
+  const onSubmit = async (data) => {
     try {
       const res = await axios.get(
-        `http://localhost:3001/users?email=${email}&password=${password}`
+        `http://localhost:3001/users?email=${data.email}&password=${data.password}`
       );
 
       if (res.data.length === 0) {
@@ -42,37 +44,37 @@ const Login = () => {
     } catch (error) {
       console.error(error);
       Swal.fire("Error", "Credenciales incorrectas", "error");
-    } finally {
-      setLoading(false);
     }
   };
 
   return (
     <div className="login-container">
       <h2>INICIAR SESIÓN</h2>
-      <form className="login-form" onSubmit={handleSubmit}>
+      <form className="login-form" onSubmit={handleSubmit(onSubmit)}>
         <label htmlFor="email">Email</label>
         <input
           type="email"
           id="email"
           placeholder="Ingresa tu email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
+          {...register("email", loginValidation.email)}
         />
+        {errors.email && <p className="error">{errors.email.message}</p>}
 
         <label htmlFor="password">Contraseña</label>
         <input
           type="password"
           id="password"
           placeholder="Ingresa tu contraseña"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
+          {...register("password", loginValidation.password)}
         />
+        {errors.password && <p className="error">{errors.password.message}</p>}
 
-        <button type="submit" className="button-confirm" disabled={loading}>
-          {loading ? "Cargando..." : "ACCEDER"}
+        <button
+          type="submit"
+          className="button-confirm"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? "Cargando..." : "ACCEDER"}
         </button>
       </form>
     </div>
