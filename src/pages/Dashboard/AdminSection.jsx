@@ -3,9 +3,8 @@ import { HiUserAdd } from "react-icons/hi";
 import { MdDelete } from "react-icons/md";
 import UserModal from "../../components/Modal/UserModal";
 import Swal from "sweetalert2";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
-import { AuthContext } from "../../context/AuthContext";
 
 const AdminSection = () => {
   const [showModal, setShowModal] = useState(false);
@@ -14,7 +13,6 @@ const AdminSection = () => {
   const [users, setUsers] = useState([]);
   const [educations, setEducations] = useState([]);
   const [addresses, setAddresses] = useState([]);
-  const { token } = useContext(AuthContext);
 
   useEffect(() => {
     const fetchData = async () => {

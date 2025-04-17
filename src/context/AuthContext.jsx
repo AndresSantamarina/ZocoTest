@@ -3,58 +3,75 @@ import { createContext, useState, useEffect } from "react";
 export const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
-  const [token, setToken] = useState(null);
-  const [user, setUser] = useState(null);
-  const [role, setRole] = useState(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [authState, setAuthState] = useState({
+    token: null,
+    user: null,
+    role: null,
+    isAuthenticated: false,
+    loading: true,
+  });
 
   useEffect(() => {
-    const initializeAuth = async () => {
+    const initializeAuth = () => {
       const savedToken = sessionStorage.getItem("token");
-      const savedUser = sessionStorage.getItem("user");
 
-      if (savedToken && savedUser) {
+      if (savedToken) {
         try {
-          const parsedUser = JSON.parse(savedUser);
-          setToken(savedToken);
-          setUser(parsedUser);
-          setRole(parsedUser.role);
-          setIsAuthenticated(true);
+          const userData = decodeToken(savedToken);
+
+          setAuthState({
+            token: savedToken,
+            user: userData,
+            role: userData.role,
+            isAuthenticated: true,
+            loading: false,
+          });
         } catch (error) {
-          console.error("Error parsing user data:", error);
+          console.error("Error decoding token:", error);
           logout();
         }
+      } else {
+        setAuthState((prev) => ({ ...prev, loading: false }));
       }
-      setLoading(false);
     };
 
     initializeAuth();
   }, []);
 
+  const decodeToken = (token) => {
+    try {
+      return JSON.parse(atob(token.split(".")[1]));
+    } catch (error) {
+      throw new Error("Invalid token");
+    }
+  };
+
   const login = (userData, token) => {
     sessionStorage.setItem("token", token);
-    sessionStorage.setItem("user", JSON.stringify(userData));
 
-    setToken(token);
-    setUser(userData);
-    setRole(userData.role);
-    setIsAuthenticated(true);
+    setAuthState({
+      token,
+      user: userData,
+      role: userData.role,
+      isAuthenticated: true,
+      loading: false,
+    });
   };
 
   const logout = () => {
-    sessionStorage.clear();
-    setToken(null);
-    setUser(null);
-    setRole(null);
-    setIsAuthenticated(false);
+    sessionStorage.removeItem("token");
+    setAuthState({
+      token: null,
+      user: null,
+      role: null,
+      isAuthenticated: false,
+      loading: false,
+    });
   };
 
   return (
-    <AuthContext.Provider
-      value={{ token, user, role, isAuthenticated, loading, login, logout }}
-    >
-      {!loading && children}
+    <AuthContext.Provider value={{ ...authState, login, logout }}>
+      {!authState.loading && children}
     </AuthContext.Provider>
   );
 };

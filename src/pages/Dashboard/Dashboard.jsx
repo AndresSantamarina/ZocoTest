@@ -1,5 +1,5 @@
 import "./Dashboard.scss";
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import AdminSection from "./AdminSection";
 import UserSection from "./UserSection";
 import { AuthContext } from "../../context/AuthContext";

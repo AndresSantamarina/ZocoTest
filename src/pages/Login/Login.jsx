@@ -17,6 +17,20 @@ const Login = () => {
     formState: { errors, isSubmitting },
   } = useForm();
 
+  const generateToken = (userData) => {
+    const header = JSON.stringify({ alg: "HS256", typ: "JWT" });
+    const payload = JSON.stringify({
+      id: userData.id,
+      email: userData.email,
+      role: userData.role,
+      name: userData.name,
+    });
+
+    return `${btoa(header)}.${btoa(payload)}.${Math.random()
+      .toString(36)
+      .substring(2, 10)}`;
+  };
+
   const onSubmit = async (data) => {
     try {
       const res = await axios.get(
@@ -28,9 +42,9 @@ const Login = () => {
       }
 
       const userData = res.data[0];
-      const fakeToken = Math.random().toString(36).substring(2);
+      const token = generateToken(userData);
 
-      login(userData, fakeToken);
+      login(userData, token);
 
       Swal.fire({
         title: `¡Bienvenido, ${userData.name}!`,
