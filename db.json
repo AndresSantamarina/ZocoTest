@@ -8,47 +8,30 @@
       "role": "admin"
     },
     {
-      "id": "2",
+      "name": "User Normal",
       "email": "user@example.com",
       "password": "user123",
-      "name": "User Normal",
-      "role": "user"
-    },
-    {
-      "name": "Andrés",
-      "email": "assantamarina@gmail.com",
-      "password": "123456",
       "role": "user",
-      "id": "1744738921183"
+      "id": "2"
     }
   ],
   "educations": [
     {
-      "id": "1",
+      "title": "Programación",
       "userId": "2",
-      "title": "Licenciatura en Sistemas"
+      "id": "1"
     },
     {
-      "id": "2",
+      "title": "Posgrado en UX",
       "userId": "2",
-      "title": "Posgrado en UX"
-    },
-    {
-      "title": "123",
-      "userId": "1744738921183",
-      "id": "b01b"
+      "id": "2"
     }
   ],
   "addresses": [
     {
-      "id": "1",
+      "address": "Calle Falsa 123",
       "userId": "2",
-      "address": "Calle Falsa 123"
-    },
-    {
-      "address": "Concepción 123",
-      "userId": "1744738921183",
-      "id": "1744738921247"
+      "id": "1"
     }
   ]
 }

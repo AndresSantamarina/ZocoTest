@@ -30,3 +30,11 @@ El usuario normal puede visualizar sus propios datos y editar/eliminar sus estud
    npm run server
 
 ✅ La aplicación debería estar disponible en http://localhost:5173 y el backend en http://localhost:3001.
+
+Credenciales del administrador:
+- admin@example.com 
+- admin123
+
+Credenciales de usuario normal:
+- user@example.com
+- user123
