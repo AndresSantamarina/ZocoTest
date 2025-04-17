@@ -1,8 +1,8 @@
 import "./Dashboard.scss";
 import { useContext } from "react";
-import AdminSection from "./AdminSection";
 import UserSection from "./UserSection";
 import { AuthContext } from "../../context/AuthContext";
+import AdminSection from "../../components/AdminSection/AdminSection";
 
 const Dashboard = () => {
   const { user, role } = useContext(AuthContext);
