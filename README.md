@@ -11,7 +11,7 @@ El usuario normal puede visualizar sus propios datos y editar/eliminar sus estud
 
 ## 🚀 Deploy del proyecto
 
-🔗 [https://zoco-test.vercel.app](https://zoco-test.vercel.app)
+🔗 [https://zoco-test-andres.vercel.app](https://zoco-test-andres.vercel.app)
 
 ## ⚙️ Cómo correr el proyecto localmente
 
